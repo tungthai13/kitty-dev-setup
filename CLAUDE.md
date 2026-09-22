@@ -132,9 +132,12 @@ of them. Do not add yazi keys back without being asked.
 
 **Do not clobber kitty defaults.** `kitty_mod` + `left/right/up/down/minus/`
 `h/j/k/l/z/g/e` are all bound by kitty. An earlier version broke tab switching
-and font sizing. This config now binds **no new keys at all** -- the only two
-`map` lines point kitty's own `kitty_mod+enter` and `kitty_mod+t` at kitty's
-own `new_window_with_cwd` / `new_tab_with_cwd`. `kitty_mod+alt+*` and the five
+and font sizing. This config binds **exactly one key of its own**:
+`kitty_mod+'` (`launch --location=hsplit`), because kitty's splits layout only
+ever splits side by side and ships no key for a top/bottom split --
+`layout_action` is unbound in the defaults. The other two `map` lines point
+kitty's own `kitty_mod+enter` and `kitty_mod+t` at kitty's own
+`new_window_with_cwd` / `new_tab_with_cwd`. `kitty_mod+alt+*` and the five
 `kitty_mod+p>*` overrides were tried and removed; do not reintroduce either.
 Before binding anything new, ask -- the user's standing rule is that a new
 machine should not require working out which keys are this repo's.

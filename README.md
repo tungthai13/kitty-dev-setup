@@ -88,7 +88,8 @@ All kitty's own keys. Nothing to learn that is specific to this repo:
 
 | Key | Does |
 |---|---|
-| `Ctrl+Shift+Enter` | New pane, **in the directory you are already in** |
+| `Ctrl+Shift+Enter` | New pane **beside** this one, in the directory you are in |
+| `Ctrl+Shift+'` | New pane **below** this one (the one key this repo invents) |
 | `Ctrl+Shift+W` | Close this pane |
 | `Ctrl+Shift+]` / `[` | Focus the next / previous pane |
 | `Ctrl+Shift+F` / `B` | Move this pane forward / back |
@@ -113,6 +114,19 @@ map kitty_mod+t     new_tab_with_cwd
 kitty's own keys — so the keys you press do not change, they just behave like
 VS Code's "new terminal opens in the project folder".
 
+### Stacking a pane
+
+kitty's `splits` layout *only* splits side by side — press
+`Ctrl+Shift+Enter` three times and you get four columns, never a row. kitty
+ships no key for a top/bottom split, so this repo adds the one it is missing:
+
+```
+map kitty_mod+apostrophe launch --location=hsplit --cwd=current
+```
+
+`Ctrl+Shift+Enter` = a pane beside. `Ctrl+Shift+'` = a pane below. This is the
+only invented key in the repo.
+
 ### Over SSH
 
 kitty runs on your machine; the remote shell cannot reach it. Splitting still
@@ -133,16 +147,18 @@ On Debian/Ubuntu the `fd` and `bat` binaries are named `fdfind` and `batcat`;
 
 ## kitty keys
 
-`kitty_mod` is <kbd>Ctrl</kbd>+<kbd>Shift</kbd>. **Every key is kitty's own.**
-This config binds no new keys at all — it only points two of kitty's keys at
-kitty's own `*_with_cwd` actions, so a new pane or tab opens where you are.
+`kitty_mod` is <kbd>Ctrl</kbd>+<kbd>Shift</kbd>. **One key here is ours**, and
+it is the only one in the whole repo: `kitty_mod`+<kbd>'</kbd>. Two more lines
+point kitty's own keys at kitty's own `*_with_cwd` actions. Everything else is
+stock kitty.
 
-That is deliberate: on a new machine you do not have to work out which keys
-came from here. None of them did.
+That is deliberate: on a new machine, the only key you have to remember is
+missing is <kbd>'</kbd>.
 
 | Key | Does |
 |---|---|
-| `kitty_mod`+<kbd>Enter</kbd> | New pane, in the current directory |
+| `kitty_mod`+<kbd>Enter</kbd> | New pane beside this one, in the current directory |
+| `kitty_mod`+<kbd>'</kbd> | New pane below this one — **ours**, see below |
 | `kitty_mod`+<kbd>t</kbd> | New tab, in the current directory |
 | `kitty_mod`+<kbd>w</kbd> | Close this pane |
 | `kitty_mod`+<kbd>]</kbd> / <kbd>[</kbd> | Focus the next / previous pane |
