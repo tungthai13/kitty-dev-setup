@@ -116,8 +116,8 @@ These only `cd`. They do not open panes — add those yourself afterwards with
 | A repo you've opened before | `zd ssi` — zoxide jump, one word |
 | Pick from everywhere you've been | `zd` — interactive zoxide list |
 | Browse to find it | `y` — yazi opens, navigate, press `q` |
-| Somewhere below here | `cdf` — fuzzy directory picker |
-| Back to the repo root | `cdg` |
+| Somewhere below here | `dev` → "Find a folder and go there" |
+| Back to the repo root | `dev` → "Go to the top of this project" |
 
 `K` inside yazi still opens the full workspace in the folder you are on, since
 that one is a deliberate "I want all three panes here".

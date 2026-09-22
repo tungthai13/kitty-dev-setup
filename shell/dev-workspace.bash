@@ -86,21 +86,6 @@ zd() {
     fi
 }
 
-# cdf: fuzzy-pick a directory below here and cd into it
-cdf() {
-    local dir
-    dir="$(fd --type d --hidden --follow --exclude .git 2>/dev/null \
-           | fzf --preview 'ls -la --color=always {}')" \
-        && [ -n "$dir" ] && builtin cd -- "$dir"
-}
-
-# cdg: cd to the root of the current git repo
-cdg() {
-    local root
-    root="$(git rev-parse --show-toplevel 2>/dev/null)" \
-        && builtin cd -- "$root" || echo "not in a git repo" >&2
-}
-
 # e: open a file in micro, accepting Claude's path:line format
 e() {
     local target="$1"
@@ -170,8 +155,13 @@ dev() {
         pane-claude) kpane claude ;;
         goto)       zi ;;
         file)       f ;;
-        folder)     cdf ;;
-        root)       cdg ;;
+        folder)     local d
+                    d="$(fd --type d --hidden --follow --exclude .git 2>/dev/null \
+                         | fzf --preview 'ls -la --color=always {}')" \
+                        && [ -n "$d" ] && builtin cd -- "$d" ;;
+        root)       local r
+                    r="$(git rev-parse --show-toplevel 2>/dev/null)" \
+                        && builtin cd -- "$r" || echo "not in a git repo" >&2 ;;
         git)        lazygit ;;
         claude)     claude ;;
         keys)       devkeys ;;
