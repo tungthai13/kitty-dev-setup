@@ -16,7 +16,11 @@ Then restart kitty, `source ~/.bashrc`, `cd` into a repo and run `kdev`.
 
 ## What you get
 
+One tab per project. `kdev` adds a tab to the window you are already in and
+names it after the project folder, so several projects sit side by side:
+
 ```
+ 1: SSI-Backend │ 2: SSI-Frontend │ 3: kitty-dev-setup
 ┌─────────────┬──────────────────────────────┐
 │             │                              │
 │    yazi     │        claude code           │
@@ -61,8 +65,9 @@ menu; ignore it otherwise.
 
 | Command | Does |
 |---|---|
-| `kdev` | Open the 3-pane workspace in the current directory |
-| `kdev ~/some/repo` | Same, in that directory |
+| `kdev` | Open the 3-pane workspace as a **new tab** in this window |
+| `kdev ~/some/repo` | Same, for that directory |
+| `kdev -w` | Open it as a new OS window instead of a tab |
 | `y` | yazi, and `cd` to wherever you quit (press `q`) |
 | `e app/main.py:42` | Open micro at line 42 |
 | `f` | Fuzzy-find a file (fzf + bat preview) and open it |
