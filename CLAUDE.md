@@ -124,10 +124,11 @@ or another program must live in `bin/`, not in `shell/`.
 
 **yazi defaults get clobbered too -- check them.** yazi's own keymap is
 compiled into the binary; read it with
-`strings $(command -v yazi) | grep "on = "`. `C`, `<A-c>` and `!` are free in
-yazi's defaults. `<Enter>` (smart-enter) is the one default this repo takes
-over, and it only adds the directory case. `G` was lazygit and was removed --
-the user does not use lazygit yet, so it gave yazi "Go to bottom" back.
+`strings $(command -v yazi) | grep "on = "`. yazi/keymap.toml is down to a
+single binding, `<Enter>` (smart-enter), which only adds the directory case.
+`G` (lazygit), `C` / `<A-c>` (Claude Code) and `!` (shell) were all removed at
+the user's request: pressing `q` quits yazi into that folder, which covers all
+of them. Do not add yazi keys back without being asked.
 
 **Do not clobber kitty defaults.** `kitty_mod` + `left/right/up/down/minus/`
 `h/j/k/l/z/g/e` are all bound by kitty. An earlier version broke tab switching

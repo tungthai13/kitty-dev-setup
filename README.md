@@ -153,18 +153,19 @@ came from here. None of them did.
 | `kitty_mod`+<kbd>p</kbd> then <kbd>n</kbd> | Open a `path:line` from Claude's output — in micro, because of `editor micro` |
 | `kitty_mod`+<kbd>p</kbd> then <kbd>f</kbd> / <kbd>l</kbd> / <kbd>w</kbd> | Paste a path / line / word from the screen onto your prompt |
 
-## yazi keys (on top of the defaults)
+## yazi keys
+
+**One**, and it only adds a case to a yazi default:
 
 | Key | Does | Replaces yazi's |
 |---|---|---|
-| <kbd>C</kbd> | Claude Code in this directory | — (free) |
-| <kbd>Alt</kbd>+<kbd>c</kbd> | Claude Code, seeded with the hovered file | — (free) |
-| <kbd>!</kbd> | Shell here | — (free) |
 | <kbd>Enter</kbd> | Enter directory / open file (smart-enter) | "Open selected files" |
 
-<kbd>Enter</kbd> is the only tool default this repo takes over anywhere, and it
-only adds a case: on a directory it enters it, on a file it still does yazi's
-`open`. Run lazygit by typing `lazygit`.
+Everything else you press in yazi is yazi's own.
+
+To start Claude Code, a shell or lazygit in the folder you are browsing, press
+<kbd>q</kbd>: yazi quits and your shell lands in that folder. Then type
+`claude`, or nothing at all — you are already in a shell.
 
 ---
 

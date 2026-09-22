@@ -1,28 +1,15 @@
 # ~/.config/yazi/keymap.toml
+#
+# One binding only. Everything else you press in yazi is yazi's own, so
+# what you learn here works on any machine with yazi on it.
+#
+# To start Claude Code or a shell in the folder you are browsing: press q.
+# yazi quits and your shell lands in that folder (see the `y` function).
 
-# C -- open Claude Code in the current directory
-[[mgr.prepend_keymap]]
-on   = "C"
-run  = 'shell "claude" --block'
-desc = "Claude Code here"
-
-# Alt+C -- open Claude Code seeded with the hovered file
-[[mgr.prepend_keymap]]
-on   = "<A-c>"
-run  = '''shell 'claude "Look at @%h"' --block'''
-desc = "Claude Code on hovered file"
-
-# ! -- drop to a shell here
-[[mgr.prepend_keymap]]
-on   = "!"
-run  = 'shell "$SHELL" --block'
-desc = "Open $SHELL here"
-
-# Enter -- cd into a directory, or open a file
+# Enter -- cd into a directory, or open a file.
+# yazi's own <Enter> is `open`, which does not enter directories; this adds
+# that case and leaves files alone. `l` / <Right> still enter a directory.
 [[mgr.prepend_keymap]]
 on   = "<Enter>"
 run  = "plugin smart-enter"
 desc = "Enter dir or open file"
-
-# Q -- quit yazi and have the shell land in this directory (pairs with `y`)
-#      (yazi's default q already writes --cwd-file; this is just a reminder key)
