@@ -44,6 +44,19 @@ processes. If you need to survive an SSH drop, add tmux yourself.
 
 ---
 
+## Start here
+
+You only need three things:
+
+| Type this | Get this |
+|---|---|
+| `dev` | A menu of everything. Type to filter, Enter to run. |
+| `keys` | The keyboard cheat sheet. |
+| `q` | Inside yazi: quit, and your shell lands in that folder. |
+
+Everything below is what `dev` runs for you. Learn it if you want to skip the
+menu; ignore it otherwise.
+
 ## Commands
 
 | Command | Does |

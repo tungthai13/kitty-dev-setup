@@ -72,3 +72,75 @@ f() {
 
 # lg: lazygit, then land in whatever dir it left you in
 command -v lazygit >/dev/null && alias lg='lazygit'
+
+# ---------------------------------------------------------------------
+# dev -- the only command you have to remember.
+# Opens a searchable menu of everything else. Type to filter, Enter to run.
+# ---------------------------------------------------------------------
+dev() {
+    local choice key
+    # format: key <TAB> label <TAB> hint
+    choice="$(printf '%s\n' \
+"browse	Browse files here	yazi - arrows to move, q to come back" \
+"workspace	Open the 3-pane workspace here	yazi + Claude Code + shell" \
+"goto	Go to another project	pick from folders you have visited" \
+"goto-work	Go to another project AND open workspace	the usual way to start" \
+"file	Find a file and edit it	fuzzy search, opens in micro" \
+"folder	Find a folder and go there	fuzzy search below here" \
+"root	Go to the top of this project	git repo root" \
+"git	Open the git UI	lazygit - stage, commit, branch, diff" \
+"claude	Start Claude Code here	" \
+"keys	Show the keyboard shortcuts	what the key combos do" \
+        | fzf --delimiter='\t' --with-nth=2,3 \
+              --prompt='what do you want to do? ' \
+              --header=$'\n  type to filter . Enter to run . Esc to cancel\n' \
+              --height=50% --layout=reverse --border=rounded --info=hidden \
+              --color='hl:cyan,hl+:cyan,header:italic')" || return 0
+    [ -n "$choice" ] || return 0
+    key="${choice%%	*}"
+
+    case "$key" in
+        browse)     y ;;
+        workspace)  kdev ;;
+        goto)       zi ;;
+        goto-work)  zi && kdev ;;
+        file)       f ;;
+        folder)     cdf ;;
+        root)       cdg ;;
+        git)        lazygit ;;
+        claude)     claude ;;
+        keys)       devkeys ;;
+    esac
+}
+
+# devkeys -- the cheat sheet, also reachable from `dev` -> keys
+devkeys() {
+    cat <<'CHEAT'
+
+  INSIDE YAZI (the file browser)
+    arrows / hjkl   move around
+    Enter           open file or enter folder
+    q               quit, and your shell lands in that folder
+    K               open the full workspace right here
+    C               start Claude Code here
+    G               git UI here
+    !               a shell here
+
+  INSIDE KITTY (the terminal, panes)
+    Ctrl+Shift+\            split right
+    Ctrl+Shift+'            split down
+    Ctrl+Shift+Alt+h j k l  move between panes
+    Ctrl+Shift+m            make this pane full screen (and back)
+    Ctrl+Shift+r            resize mode: arrows, then Enter
+    Ctrl+Shift+p then n     open a file:line printed by Claude
+    Ctrl+Shift+<- ->        switch tabs
+    Ctrl+Shift+t            new tab
+
+  TYPED COMMANDS
+    dev             this menu
+    keys            this cheat sheet
+
+CHEAT
+}
+alias keys='devkeys'
+alias '?'='dev'
