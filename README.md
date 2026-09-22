@@ -159,7 +159,7 @@ missing is <kbd>'</kbd>.
 |---|---|
 | `kitty_mod`+<kbd>Enter</kbd> | New pane beside this one, in the current directory |
 | `kitty_mod`+<kbd>'</kbd> | New pane below this one — **ours**, see below |
-| `kitty_mod`+<kbd>t</kbd> | New tab, in the current directory |
+| `kitty_mod`+<kbd>t</kbd> | New tab — starts at `~`, a fresh piece of work |
 | `kitty_mod`+<kbd>w</kbd> | Close this pane |
 | `kitty_mod`+<kbd>]</kbd> / <kbd>[</kbd> | Focus the next / previous pane |
 | `kitty_mod`+<kbd>f</kbd> / <kbd>b</kbd> | Move this pane forward / back |
