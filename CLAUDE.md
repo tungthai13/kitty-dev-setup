@@ -124,8 +124,11 @@ or another program must live in `bin/`, not in `shell/`.
 
 **Do not clobber kitty defaults.** `kitty_mod` + `left/right/up/down/minus/`
 `h/j/k/l/z/g/e` are all bound by kitty. An earlier version broke tab switching
-and font sizing. Free keys currently used: `\ ' m p` and `kitty_mod+alt+*`
-(`alt+f/s/c` add one workspace pane; `alt+hjkl`/arrows move focus/panes).
+and font sizing. Free keys currently used: `\ ' m p` only. `kitty_mod+alt+*` was tried and
+**removed**: three-modifier chords are unmemorable on a new machine, and eight
+of them duplicated kitty builtins (`kitty_mod+]`/`[` focus a pane,
+`kitty_mod+f`/`b` move one). Adding a pane is the `kpane` command instead.
+Do not reintroduce `kitty_mod+alt+*` without asking.
 Check a candidate before binding it:
 
 ```sh

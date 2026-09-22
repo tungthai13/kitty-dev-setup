@@ -198,13 +198,11 @@ devkeys() {
     !               a shell here
 
   INSIDE KITTY (the terminal, panes)
-    Ctrl+Shift+Alt+f        add a file browser pane (left)
-    Ctrl+Shift+Alt+s        add a shell pane (below)
-    Ctrl+Shift+Alt+c        add a Claude Code pane (right)
-    Ctrl+Shift+w            close this pane
     Ctrl+Shift+\            split right (empty shell)
     Ctrl+Shift+'            split down (empty shell)
-    Ctrl+Shift+Alt+h j k l  move between panes
+    Ctrl+Shift+w            close this pane
+    Ctrl+Shift+] [          focus the next / previous pane
+    Ctrl+Shift+f b          move this pane forward / back
     Ctrl+Shift+m            make this pane full screen (and back)
     Ctrl+Shift+r            resize mode: arrows, then Enter
     Ctrl+Shift+p then n     open a file:line printed by Claude

@@ -90,21 +90,21 @@ with one pane and add the others when you need them:
 | Just a terminal | a plain tab — `kitty_mod`+<kbd>t</kbd> |
 | Just browse files | `y` |
 | Just Claude Code | `claude` |
-| ...and now a shell too | `kitty_mod`+<kbd>Alt</kbd>+<kbd>s</kbd> |
-| ...and now the file tree | `kitty_mod`+<kbd>Alt</kbd>+<kbd>f</kbd> |
+| ...and now a shell too | `kpane shell` |
+| ...and now the file tree | `kpane files` |
 | Done with a pane | `kitty_mod`+<kbd>w</kbd>, or type `exit` |
 
 Each pane lands in the slot `kdev` would have used, so however you build it up
-you end up with the same layout. The keys work even when kitty's remote control
-is off; `kpane` (the typed form) needs it.
+you end up with the same layout. `kpane` needs kitty's remote control; without
+it, it runs the program in the current pane instead of failing.
 
 ### Over SSH
 
-kitty runs on your machine, the remote shell cannot reach it.
-`kitty_mod`+<kbd>Alt</kbd>+<kbd>f/s/c</kbd> still work, but the new pane is
-**local** — `ssh` again inside it. `kdev` and `kpane` typed on the remote host
-have no socket to talk to: `kpane` runs the program in the current pane instead,
-and `kdev` falls back to a new window.
+kitty runs on your machine, the remote shell cannot reach it. Splitting with
+`kitty_mod`+<kbd>\\</kbd> still works, but the new pane is **local** — `ssh`
+again inside it. `kdev` and `kpane` typed on the remote host have no socket to
+talk to: `kpane` runs the program in the current pane instead, and `kdev` falls
+back to a new window.
 
 ### Getting to a directory fast
 
@@ -142,20 +142,26 @@ works** — this config only binds keys kitty leaves free.
 
 | Key | Does |
 |---|---|
-| `kitty_mod`+<kbd>Alt</kbd>+<kbd>f</kbd> | Add a file browser pane (left, 30%) |
-| `kitty_mod`+<kbd>Alt</kbd>+<kbd>s</kbd> | Add a shell pane (below, 30%) |
-| `kitty_mod`+<kbd>Alt</kbd>+<kbd>c</kbd> | Add a Claude Code pane (right, 70%) |
-| `kitty_mod`+<kbd>w</kbd> | Close this pane (kitty's own key) |
 | `kitty_mod`+<kbd>\\</kbd> | Split right (plain shell) |
 | `kitty_mod`+<kbd>'</kbd> | Split down (plain shell) |
-| `kitty_mod`+<kbd>Alt</kbd>+<kbd>h/j/k/l</kbd> | Focus the pane left/down/up/right |
-| `kitty_mod`+<kbd>Alt</kbd>+<kbd>←↓↑→</kbd> | Move the pane itself |
 | `kitty_mod`+<kbd>m</kbd> | Zoom the focused pane (toggle stack layout) |
 | `kitty_mod`+<kbd>p</kbd> then <kbd>n</kbd> | Open a `path:line` from Claude's output in micro |
 | `kitty_mod`+<kbd>p</kbd> then <kbd>f</kbd> | Open any path on screen |
 
-Resizing is kitty's own `kitty_mod`+<kbd>r</kbd> — arrows, then <kbd>Enter</kbd>.
-Tabs, font size, scrollback and `kitty_mod`+<kbd>Enter</kbd> are untouched.
+Everything else is kitty's own, unchanged — worth knowing because this config
+deliberately adds nothing on top of them:
+
+| Key | Does |
+|---|---|
+| `kitty_mod`+<kbd>]</kbd> / <kbd>[</kbd> | Focus the next / previous pane |
+| `kitty_mod`+<kbd>f</kbd> / <kbd>b</kbd> | Move this pane forward / back in the layout |
+| `kitty_mod`+<kbd>w</kbd> | Close this pane |
+| `kitty_mod`+<kbd>r</kbd> | Resize — arrows, then <kbd>Enter</kbd> |
+| `kitty_mod`+<kbd>t</kbd>, `kitty_mod`+<kbd>←→</kbd> | New tab, switch tabs |
+
+This config binds no three-modifier (`Ctrl+Shift+Alt+…`) kitty keys, on
+purpose: on a new machine, any kitty key with <kbd>Alt</kbd> in it is kitty's,
+not ours. (yazi's <kbd>Alt</kbd>+<kbd>c</kbd> below is a yazi key, not a kitty one.)
 
 ## yazi keys (on top of the defaults)
 
