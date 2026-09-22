@@ -195,11 +195,20 @@ devkeys() {
     Ctrl+Shift+<- ->        switch tabs
     Ctrl+Shift+t            new tab
 
-  TYPED COMMANDS
-    dev             this menu
+  TYPED COMMANDS -- this is all of them
+    dev             this menu (also: ?)
     keys            this cheat sheet
+
+    y               browse with yazi, land where you quit
+    zd ssi          jump to a project you have opened before
+    zd              ...or pick one from a list
+
+    f               find a file and open it in micro
+    e main.py:42    open that file at that line
+    lg              git UI (lazygit)
+
+    kpane files     add ONE pane: files | shell | claude
     kdev            all three panes at once
-    kpane files     add one pane: files | shell | claude
 
 CHEAT
 }
