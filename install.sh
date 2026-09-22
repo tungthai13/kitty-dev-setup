@@ -121,6 +121,15 @@ link_configs() {
   link "$REPO/yazi/keymap.toml"    "$CFG/yazi/keymap.toml"
   link "$REPO/yazi/package.toml"   "$CFG/yazi/package.toml"
   link "$REPO/micro/settings.json" "$CFG/micro/settings.json"
+
+  # kdev is a script, not a shell function, so yazi can call it too.
+  mkdir -p "$HOME/.local/bin"
+  ln -sf "$REPO/bin/kdev" "$HOME/.local/bin/kdev"
+  ok "~/.local/bin/kdev"
+  case ":$PATH:" in
+    *":$HOME/.local/bin:"*) ;;
+    *) warn "~/.local/bin is not on \$PATH -- add it to your shell rc" ;;
+  esac
 }
 
 # --------------------------------------------------------------------

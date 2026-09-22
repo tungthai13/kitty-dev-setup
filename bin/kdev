@@ -1,0 +1,14 @@
+#!/usr/bin/env bash
+# kdev -- open the 3-pane dev workspace (yazi | claude / shell) in a directory.
+# A script, not a shell function, so yazi and other tools can call it too.
+set -euo pipefail
+
+dir="${1:-$PWD}"
+[ -d "$dir" ] || dir="$(dirname "$dir")"      # accept a file path too
+dir="$(cd "$dir" && pwd)"
+
+session="${XDG_CONFIG_HOME:-$HOME/.config}/kitty/dev.session"
+[ -f "$session" ] || { echo "kdev: no session file at $session" >&2; exit 1; }
+
+kitty --single-instance --session "$session" --directory "$dir" >/dev/null 2>&1 &
+disown

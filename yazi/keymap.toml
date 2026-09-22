@@ -29,3 +29,13 @@ desc = "Lazygit here"
 on   = "<Enter>"
 run  = "plugin smart-enter"
 desc = "Enter dir or open file"
+
+# K -- open the full kdev workspace in the directory you are browsing,
+#      without leaving yazi.
+[[mgr.prepend_keymap]]
+on   = "K"
+run  = 'shell -- kdev "$PWD"'
+desc = "Open kdev workspace here"
+
+# Q -- quit yazi and have the shell land in this directory (pairs with `y`)
+#      (yazi's default q already writes --cwd-file; this is just a reminder key)

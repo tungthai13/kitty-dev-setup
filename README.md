@@ -55,6 +55,22 @@ processes. If you need to survive an SSH drop, add tmux yourself.
 | `f` | Fuzzy-find a file (fzf + bat preview) and open it |
 | `lg` | lazygit |
 
+### Getting to a directory fast
+
+Ranked by how fast they are, not by how clever:
+
+| You want | Do this |
+|---|---|
+| A repo you've opened before | `zd ssi` — zoxide jump + workspace, one word |
+| Pick from everywhere you've been | `zd` — interactive zoxide list, then workspace |
+| Browse to find it | `kd` — yazi opens, navigate, press `q`, workspace opens there |
+| Already browsing in yazi | press `K` — workspace opens in the current directory |
+| Somewhere below here | `cdf` — fuzzy directory picker |
+| Back to the repo root | `cdg` |
+
+`kdev` is a script on `$PATH` (`bin/kdev`), so it works from yazi, scripts and
+any shell — not just an interactive bash session.
+
 ## Supporting tools
 
 | Tool | Replaces | Wired up as |
@@ -94,6 +110,7 @@ Tabs, font size, scrollback and `kitty_mod`+<kbd>Enter</kbd> are untouched.
 | <kbd>Alt</kbd>+<kbd>c</kbd> | Claude Code, seeded with the hovered file |
 | <kbd>!</kbd> | Shell here |
 | <kbd>G</kbd> | lazygit here |
+| <kbd>K</kbd> | Open the kdev workspace in this directory |
 | <kbd>Enter</kbd> | Enter directory / open file (smart-enter) |
 
 ---
