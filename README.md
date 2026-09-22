@@ -145,8 +145,6 @@ works** — this config only binds keys kitty leaves free.
 | `kitty_mod`+<kbd>\\</kbd> | Split right (plain shell) |
 | `kitty_mod`+<kbd>'</kbd> | Split down (plain shell) |
 | `kitty_mod`+<kbd>m</kbd> | Zoom the focused pane (toggle stack layout) |
-| `kitty_mod`+<kbd>p</kbd> then <kbd>n</kbd> | Open a `path:line` from Claude's output in micro |
-| `kitty_mod`+<kbd>p</kbd> then <kbd>f</kbd> | Open any path on screen |
 
 Everything else is kitty's own, unchanged — worth knowing because this config
 deliberately adds nothing on top of them:
@@ -158,6 +156,8 @@ deliberately adds nothing on top of them:
 | `kitty_mod`+<kbd>w</kbd> | Close this pane |
 | `kitty_mod`+<kbd>r</kbd> | Resize — arrows, then <kbd>Enter</kbd> |
 | `kitty_mod`+<kbd>t</kbd>, `kitty_mod`+<kbd>←→</kbd> | New tab, switch tabs |
+| `kitty_mod`+<kbd>p</kbd> then <kbd>n</kbd> | Open a `path:line` from Claude's output — in micro, because of `editor micro` |
+| `kitty_mod`+<kbd>p</kbd> then <kbd>f</kbd> / <kbd>l</kbd> / <kbd>w</kbd> | Paste a path / line / word from the screen onto your prompt |
 
 This config binds no three-modifier (`Ctrl+Shift+Alt+…`) kitty keys, on
 purpose: on a new machine, any kitty key with <kbd>Alt</kbd> in it is kitty's,

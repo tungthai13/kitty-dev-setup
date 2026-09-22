@@ -206,7 +206,8 @@ devkeys() {
     Ctrl+Shift+f b          move this pane forward / back
     Ctrl+Shift+m            make this pane full screen (and back)
     Ctrl+Shift+r            resize mode: arrows, then Enter
-    Ctrl+Shift+p then n     open a file:line printed by Claude
+    Ctrl+Shift+p then n     open a file:line printed by Claude, in micro
+    Ctrl+Shift+p then f     paste a path from the screen onto your prompt
     Ctrl+Shift+<- ->        switch tabs
     Ctrl+Shift+t            new tab
 
