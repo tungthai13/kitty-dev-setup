@@ -12,6 +12,7 @@ for f in kitty/local.conf kitty/dev.session \
   [ -L "$CFG/$f" ] && rm -v "$CFG/$f"
 done
 
+# kdev / kpane were removed from this repo; clean up older installs.
 for b in kdev kpane; do
   [ -L "$HOME/.local/bin/$b" ] && rm -v "$HOME/.local/bin/$b"
 done

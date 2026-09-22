@@ -115,23 +115,11 @@ link() {
 link_configs() {
   say "Linking configs"
   link "$REPO/kitty/local.conf"    "$CFG/kitty/local.conf"
-  link "$REPO/kitty/dev.session"   "$CFG/kitty/dev.session"
   link "$REPO/yazi/init.lua"       "$CFG/yazi/init.lua"
   link "$REPO/yazi/yazi.toml"      "$CFG/yazi/yazi.toml"
   link "$REPO/yazi/keymap.toml"    "$CFG/yazi/keymap.toml"
   link "$REPO/yazi/package.toml"   "$CFG/yazi/package.toml"
   link "$REPO/micro/settings.json" "$CFG/micro/settings.json"
-
-  # kdev is a script, not a shell function, so yazi can call it too.
-  mkdir -p "$HOME/.local/bin"
-  ln -sf "$REPO/bin/kdev" "$HOME/.local/bin/kdev"
-  ok "~/.local/bin/kdev"
-  ln -sf "$REPO/bin/kpane" "$HOME/.local/bin/kpane"
-  ok "~/.local/bin/kpane"
-  case ":$PATH:" in
-    *":$HOME/.local/bin:"*) ;;
-    *) warn "~/.local/bin is not on \$PATH -- add it to your shell rc" ;;
-  esac
 }
 
 # --------------------------------------------------------------------
@@ -158,7 +146,7 @@ wire_kitty_conf() {
 }
 
 # --------------------------------------------------------------------
-# 5. Shell helpers (y / kdev / e)
+# 5. Shell helpers (y / e / dev)
 # --------------------------------------------------------------------
 wire_shell() {
   local rc
@@ -226,6 +214,6 @@ main() {
   echo "  1. Restart kitty completely (font cache is read at startup)."
   echo "  2. Run:  source ~/.bashrc  (or open a new shell)"
   echo
-  echo "  Then:  cd <a repo> && kdev"
+  echo "  Then:  cd <a repo> && dev"
 }
 main

@@ -122,16 +122,21 @@ pane — only a shell function can do that. `bin/kdev` handles `-t` and `-w`, an
 the function delegates to it with `command kdev`. Anything callable from yazi
 or another program must live in `bin/`, not in `shell/`.
 
+**yazi defaults get clobbered too -- check them.** yazi's own keymap is
+compiled into the binary; read it with
+`strings $(command -v yazi) | grep "on = "`. `G` (lazygit) and `<Enter>`
+(smart-enter) currently take over yazi's "Go to bottom" and "Open selected
+files". `C`, `<A-c>` and `!` are free in yazi's defaults.
+
 **Do not clobber kitty defaults.** `kitty_mod` + `left/right/up/down/minus/`
 `h/j/k/l/z/g/e` are all bound by kitty. An earlier version broke tab switching
-and font sizing. Free keys currently used: `\ ' m` only -- three `map` lines in all.
-`kitty_mod+p` is kitty's OWN chord prefix; this config overrode five of its
-nine sub-keys and no longer does. `p>n` opens `file:42` in micro purely
-because `editor micro` is set, so do not re-add a `p>n` mapping. `kitty_mod+alt+*` was tried and
-**removed**: three-modifier chords are unmemorable on a new machine, and eight
-of them duplicated kitty builtins (`kitty_mod+]`/`[` focus a pane,
-`kitty_mod+f`/`b` move one). Adding a pane is the `kpane` command instead.
-Do not reintroduce `kitty_mod+alt+*` without asking.
+and font sizing. This config now binds **no new keys at all** -- the only two
+`map` lines point kitty's own `kitty_mod+enter` and `kitty_mod+t` at kitty's
+own `new_window_with_cwd` / `new_tab_with_cwd`. `kitty_mod+alt+*` and the five
+`kitty_mod+p>*` overrides were tried and removed; do not reintroduce either.
+Before binding anything new, ask -- the user's standing rule is that a new
+machine should not require working out which keys are this repo's.
+
 Check a candidate before binding it:
 
 ```sh

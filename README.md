@@ -10,15 +10,13 @@ git clone https://github.com/tungthai13/kitty-dev-setup.git ~/personal/kitty-dev
 cd ~/personal/kitty-dev-setup && ./install.sh
 ```
 
-Then restart kitty, `source ~/.bashrc`, `cd` into a repo and run `kdev`.
+Then restart kitty, `source ~/.bashrc`, `cd` into a repo and type `dev`.
 
 ---
 
 ## What you get
 
-One tab per project. Open a kitty tab, `cd` to the project, run `kdev`: that
-tab becomes the workspace and is renamed after the project folder. Your shell
-turns into the Claude Code pane, so nothing is left over:
+Panes you make yourself, with kitty's own keys, whenever you want one:
 
 ```
  1: SSI-Backend │ 2: SSI-Frontend │ 3: kitty-dev-setup
@@ -31,85 +29,51 @@ turns into the Claude Code pane, so nothing is left over:
 └─────────────┴──────────────────────────────┘
 ```
 
+Nothing here builds that for you. `Ctrl+Shift+Enter` makes a pane, you run
+`yazi` or `claude` in it, `Ctrl+Shift+W` closes it. One pane most of the time,
+three when you want three.
+
 | VS Code | Here |
 |---|---|
-| Explorer sidebar | yazi pane |
+| Explorer sidebar | `yazi` in a pane |
 | Editor tabs | micro (`$EDITOR`) |
-| Integrated terminal | kitty split |
+| Integrated terminal | `Ctrl+Shift+Enter` |
+| New terminal opens in the project | `Ctrl+Shift+Enter` — see below |
 | Ctrl+click `file:line` | `Ctrl+Shift+P` then `N` |
-| Workspace layout | `kdev` |
 | Source control panel | `G` in yazi (lazygit) |
 
 No tmux. kitty's own `splits` layout does the panes, so there is no extra
 render layer between you and the terminal — which is the whole point if you
 came here because VS Code's integrated terminal felt slow.
 
-**Tradeoff:** no detach/reattach. `kdev` restores the *layout*, not running
-processes. If you need to survive an SSH drop, add tmux yourself.
+**Tradeoff:** no detach/reattach, and no saved layout. If you need to survive
+an SSH drop, add tmux yourself.
 
 ---
 
 ## Start here
 
-You only need three things:
+You only need two things:
 
 | Type this | Get this |
 |---|---|
 | `dev` | A menu of everything. Type to filter, Enter to run. |
-| `keys` | The keyboard cheat sheet. |
 | `q` | Inside yazi: quit, and your shell lands in that folder. |
-
-Everything below is what `dev` runs for you. Learn it if you want to skip the
-menu; ignore it otherwise.
 
 ## Commands
 
+This repo adds three, and nothing else:
+
 | Command | Does |
 |---|---|
-| `kdev` | Turn **this tab** into the 3-pane workspace |
-| `kdev ~/some/repo` | Same, for that directory |
-| `kdev -t` | New tab instead |
-| `kdev -w` | New OS window instead |
-| `kpane files` | Add **one** pane: yazi on the left |
-| `kpane shell` | Add **one** pane: a shell below |
-| `kpane claude` | Add **one** pane: Claude Code on the right |
+| `dev` | The menu |
 | `y` | yazi, and `cd` to wherever you quit (press `q`) |
 | `e app/main.py:42` | Open micro at line 42 |
-| `f` | Fuzzy-find a file (fzf + bat preview) and open it |
-| `lg` | lazygit |
 
-### One pane at a time
-
-`kdev` gives you all three panes. Most of the time you want fewer — just a
-shell for `docker compose`, just yazi to look around, just Claude Code. Start
-with one pane and add the others when you need them:
-
-| You want | Do |
-|---|---|
-| Just read a file | `e path/to/file` (or `y`, then <kbd>Enter</kbd>) |
-| Just a terminal | a plain tab — `kitty_mod`+<kbd>t</kbd> |
-| Just browse files | `y` |
-| Just Claude Code | `claude` |
-| ...and now a shell too | `kpane shell` |
-| ...and now the file tree | `kpane files` |
-| Done with a pane | `kitty_mod`+<kbd>w</kbd>, or type `exit` |
-
-Each pane lands in the slot `kdev` would have used, so however you build it up
-you end up with the same layout. `kpane` needs kitty's remote control; without
-it, it runs the program in the current pane instead of failing.
-
-### Over SSH
-
-kitty runs on your machine, the remote shell cannot reach it. Splitting with
-`kitty_mod`+<kbd>\\</kbd> still works, but the new pane is **local** — `ssh`
-again inside it. `kdev` and `kpane` typed on the remote host have no socket to
-talk to: `kpane` runs the program in the current pane instead, and `kdev` falls
-back to a new window.
+Everything else you use is the tool's own: `z` / `zi` (zoxide), `lazygit`,
+`claude`, `micro`, `yazi`, `rg`, `fd`, `bat`.
 
 ### Getting to a directory fast
-
-These only `cd`. They do not open panes — add those yourself afterwards with
-`kpane`, or all three at once with `kdev`.
 
 | You want | Do this |
 |---|---|
@@ -119,11 +83,41 @@ These only `cd`. They do not open panes — add those yourself afterwards with
 | Somewhere below here | `dev` → "Find a folder and go there" |
 | Back to the repo root | `dev` → "Go to the top of this project" |
 
-`K` inside yazi still opens the full workspace in the folder you are on, since
-that one is a deliberate "I want all three panes here".
+### Making panes
 
-`kdev` and `kpane` are scripts on `$PATH` (`bin/`), so they work from yazi,
-scripts and any shell — not just an interactive bash session.
+All kitty's own keys. Nothing to learn that is specific to this repo:
+
+| Key | Does |
+|---|---|
+| `Ctrl+Shift+Enter` | New pane, **in the directory you are already in** |
+| `Ctrl+Shift+W` | Close this pane |
+| `Ctrl+Shift+]` / `[` | Focus the next / previous pane |
+| `Ctrl+Shift+F` / `B` | Move this pane forward / back |
+| `Ctrl+Shift+L` | Cycle layout — use it to zoom one pane full screen |
+| `Ctrl+Shift+R` | Resize — arrows, then Enter |
+
+Then just run what you want in the new pane: `yazi`, `claude`, `lazygit`, or
+nothing at all.
+
+### New panes open where you are
+
+Out of the box kitty opens a new pane in the directory kitty was *started* in
+— so however deep in a project you are, a new pane lands at `~`. That is the
+one kitty behaviour this config changes:
+
+```
+map kitty_mod+enter new_window_with_cwd
+map kitty_mod+t     new_tab_with_cwd
+```
+
+`new_window_with_cwd` and `new_tab_with_cwd` are kitty's own actions, bound to
+kitty's own keys — so the keys you press do not change, they just behave like
+VS Code's "new terminal opens in the project folder".
+
+### Over SSH
+
+kitty runs on your machine; the remote shell cannot reach it. Splitting still
+works, but the new pane is **local** — `ssh` again inside it.
 
 ## Supporting tools
 
@@ -140,55 +134,49 @@ On Debian/Ubuntu the `fd` and `bat` binaries are named `fdfind` and `batcat`;
 
 ## kitty keys
 
-`kitty_mod` is <kbd>Ctrl</kbd>+<kbd>Shift</kbd>. **Every kitty default still
-works** — this config only binds keys kitty leaves free.
+`kitty_mod` is <kbd>Ctrl</kbd>+<kbd>Shift</kbd>. **Every key is kitty's own.**
+This config binds no new keys at all — it only points two of kitty's keys at
+kitty's own `*_with_cwd` actions, so a new pane or tab opens where you are.
+
+That is deliberate: on a new machine you do not have to work out which keys
+came from here. None of them did.
 
 | Key | Does |
 |---|---|
-| `kitty_mod`+<kbd>\\</kbd> | Split right (plain shell) |
-| `kitty_mod`+<kbd>'</kbd> | Split down (plain shell) |
-| `kitty_mod`+<kbd>m</kbd> | Zoom the focused pane (toggle stack layout) |
-
-Everything else is kitty's own, unchanged — worth knowing because this config
-deliberately adds nothing on top of them:
-
-| Key | Does |
-|---|---|
-| `kitty_mod`+<kbd>]</kbd> / <kbd>[</kbd> | Focus the next / previous pane |
-| `kitty_mod`+<kbd>f</kbd> / <kbd>b</kbd> | Move this pane forward / back in the layout |
+| `kitty_mod`+<kbd>Enter</kbd> | New pane, in the current directory |
+| `kitty_mod`+<kbd>t</kbd> | New tab, in the current directory |
 | `kitty_mod`+<kbd>w</kbd> | Close this pane |
+| `kitty_mod`+<kbd>]</kbd> / <kbd>[</kbd> | Focus the next / previous pane |
+| `kitty_mod`+<kbd>f</kbd> / <kbd>b</kbd> | Move this pane forward / back |
+| `kitty_mod`+<kbd>l</kbd> | Cycle layout — zoom a pane full screen and back |
 | `kitty_mod`+<kbd>r</kbd> | Resize — arrows, then <kbd>Enter</kbd> |
-| `kitty_mod`+<kbd>t</kbd>, `kitty_mod`+<kbd>←→</kbd> | New tab, switch tabs |
+| `kitty_mod`+<kbd>←→</kbd> | Switch tabs |
 | `kitty_mod`+<kbd>p</kbd> then <kbd>n</kbd> | Open a `path:line` from Claude's output — in micro, because of `editor micro` |
 | `kitty_mod`+<kbd>p</kbd> then <kbd>f</kbd> / <kbd>l</kbd> / <kbd>w</kbd> | Paste a path / line / word from the screen onto your prompt |
 
-This config binds no three-modifier (`Ctrl+Shift+Alt+…`) kitty keys, on
-purpose: on a new machine, any kitty key with <kbd>Alt</kbd> in it is kitty's,
-not ours. (yazi's <kbd>Alt</kbd>+<kbd>c</kbd> below is a yazi key, not a kitty one.)
-
 ## yazi keys (on top of the defaults)
 
-| Key | Does |
-|---|---|
-| <kbd>C</kbd> | Claude Code in this directory |
-| <kbd>Alt</kbd>+<kbd>c</kbd> | Claude Code, seeded with the hovered file |
-| <kbd>!</kbd> | Shell here |
-| <kbd>G</kbd> | lazygit here |
-| <kbd>K</kbd> | Open the kdev workspace in this directory |
-| <kbd>Enter</kbd> | Enter directory / open file (smart-enter) |
+| Key | Does | Replaces yazi's |
+|---|---|---|
+| <kbd>C</kbd> | Claude Code in this directory | — (free) |
+| <kbd>Alt</kbd>+<kbd>c</kbd> | Claude Code, seeded with the hovered file | — (free) |
+| <kbd>!</kbd> | Shell here | — (free) |
+| <kbd>G</kbd> | lazygit here | "Go to bottom" |
+| <kbd>Enter</kbd> | Enter directory / open file (smart-enter) | "Open selected files" |
+
+<kbd>G</kbd> and <kbd>Enter</kbd> are the only tool defaults this repo takes
+over anywhere. <kbd>g</kbd> then <kbd>g</kbd> still goes to the top; use
+<kbd>End</kbd> for the bottom.
 
 ---
 
 ## Layout of this repo
 
 ```
-kitty/local.conf      kitty options + keybindings   -> ~/.config/kitty/local.conf
-kitty/dev.session     the 3-pane layout             -> ~/.config/kitty/dev.session
+kitty/local.conf      kitty settings, 2 key lines   -> ~/.config/kitty/local.conf
 yazi/*.toml, init.lua yazi config + plugins         -> ~/.config/yazi/
 micro/settings.json   editor settings               -> ~/.config/micro/settings.json
-bin/kdev              all three panes at once       -> ~/.local/bin/kdev
-bin/kpane             add one pane at a time        -> ~/.local/bin/kpane
-shell/dev-workspace.bash   y / kdev / e functions   -> sourced from ~/.bashrc
+shell/dev-workspace.bash   dev / y / e              -> sourced from ~/.bashrc
 install.sh            does all of the above
 uninstall.sh          undoes the symlinks and the shell block
 ```
@@ -220,8 +208,8 @@ reloaded. Check `fc-list | grep -i "nerd font"`, then *fully quit* kitty —
 Use `font_family JetBrainsMono Nerd Font` (no trailing `Mono`) — yazi expects
 double-width icons.
 
-**`kdev` opens a second kitty process.** Your running kitty was not started
-with `--single-instance`. Harmless; add `-1` to your launcher if it bothers you.
+**A new pane still opens at `~`.** `local.conf` was not reloaded. Press
+`Ctrl+Shift+F5`, or check `grep new_window_with_cwd ~/.config/kitty/local.conf`.
 
 **yazi shows no git signs.** `~/.config/yazi/init.lua` must exist and call
 `require("git"):setup{}`. Re-run `./install.sh`.
