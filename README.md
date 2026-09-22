@@ -69,6 +69,15 @@ processes. If you need to survive an SSH drop, add tmux yourself.
 | `kitty_mod`+<kbd>p</kbd> then <kbd>f</kbd> | Open any path on screen |
 | `kitty_mod`+<kbd>g</kbd> | Scrollback in a pager |
 
+### Remapped kitty defaults
+
+`local.conf` takes over three default bindings. The replacements:
+
+| Was | Now does | Old function still on |
+|---|---|---|
+| `kitty_mod`+<kbd>-</kbd> (font smaller) | split down | `kitty_mod`+<kbd>Backspace</kbd> resets font |
+| `kitty_mod`+<kbd>←</kbd>/<kbd>→</kbd> (prev/next tab) | resize pane | <kbd>Ctrl</kbd>+<kbd>Tab</kbd> |
+
 ## yazi keys (on top of the defaults)
 
 | Key | Does |

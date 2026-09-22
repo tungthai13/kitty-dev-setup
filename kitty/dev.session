@@ -1,14 +1,14 @@
-# ~/.config/kitty/dev.session -- launched by `kdev` (see .bashrc)
-# Layout:  [ yazi 30% | claude 70% ]
-#                     [ shell      ]
+# ~/.config/kitty/dev.session -- launched by `kdev` (see shell/dev-workspace.bash)
+# Layout:  [ yazi | claude 70% ]
+#                 [ shell  30% ]
+# --bias is the fraction taken by the window BEING LAUNCHED.
 new_tab dev
 layout splits
 
-launch --title files --bias 30 yazi
+launch --title files yazi
 
-launch --location=vsplit --title claude claude
+launch --location=vsplit --bias 70 --title claude claude
 
-launch --location=hsplit --bias 70 --title shell
+launch --location=hsplit --bias 30 --title shell
 
-# Focus the claude pane on open
 focus_matching_window title:claude

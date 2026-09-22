@@ -177,11 +177,10 @@ wire_shell() {
 # --------------------------------------------------------------------
 install_yazi_plugins() {
   command -v ya >/dev/null || { warn "'ya' not found -- skipping yazi plugins"; return; }
-  say "Installing yazi plugins"
-  for p in full-border git smart-enter; do
-    ya pkg add "yazi-rs/plugins:$p" >/dev/null 2>&1 || ya pkg upgrade >/dev/null 2>&1 || true
-  done
-  ok "yazi plugins: full-border, git, smart-enter"
+  say "Installing yazi plugins from package.toml"
+  # `ya pkg install` deploys every dep listed in the symlinked package.toml.
+  ya pkg install || warn "ya pkg install failed -- run it by hand"
+  ok "yazi plugins: $(ls "$CFG/yazi/plugins" 2>/dev/null | tr '\\n' ' ')"
 }
 
 # --------------------------------------------------------------------
