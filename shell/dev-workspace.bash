@@ -194,6 +194,7 @@ devkeys() {
     q               quit, and your shell lands in that folder
     K               open the full workspace right here
     C               start Claude Code here
+    Alt+c           Claude Code, seeded with the file you are on
     G               git UI here
     !               a shell here
 
