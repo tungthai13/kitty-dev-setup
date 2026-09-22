@@ -1,0 +1,31 @@
+# ~/.config/yazi/keymap.toml
+
+# C -- open Claude Code in the current directory
+[[mgr.prepend_keymap]]
+on   = "C"
+run  = 'shell "claude" --block'
+desc = "Claude Code here"
+
+# Alt+C -- open Claude Code seeded with the hovered file
+[[mgr.prepend_keymap]]
+on   = "<A-c>"
+run  = '''shell 'claude "Look at @$0"' --block'''
+desc = "Claude Code on hovered file"
+
+# ! -- drop to a shell here
+[[mgr.prepend_keymap]]
+on   = "!"
+run  = 'shell "$SHELL" --block'
+desc = "Open $SHELL here"
+
+# G -- lazygit here (no-op until lazygit is installed)
+[[mgr.prepend_keymap]]
+on   = "G"
+run  = 'shell "lazygit" --block'
+desc = "Lazygit here"
+
+# Enter -- cd into a directory, or open a file
+[[mgr.prepend_keymap]]
+on   = "<Enter>"
+run  = "plugin smart-enter"
+desc = "Enter dir or open file"

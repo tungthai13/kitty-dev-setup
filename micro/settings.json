@@ -1,0 +1,46 @@
+{
+    "autoindent": true,
+    "autosu": false,
+    "clipboard": "terminal",
+    "colorcolumn": 79,
+    "colorscheme": "monokai",
+    "cursorline": true,
+    "diffgutter": true,
+    "eofnewline": true,
+    "ftoptions": true,
+    "hlsearch": true,
+    "incsearch": true,
+    "keepautoindent": true,
+    "mkparents": true,
+    "mouse": true,
+    "rmtrailingws": true,
+    "ruler": true,
+    "savecursor": true,
+    "saveundo": true,
+    "scrollbar": true,
+    "scrollmargin": 4,
+    "smartpaste": true,
+    "softwrap": false,
+    "statusformatleft": "$(filename) $(modified)($(line),$(col)) $(opt:filetype) $(opt:fileformat) $(opt:encoding)",
+    "sucmd": "sudo",
+    "syntax": true,
+    "tabmovement": true,
+    "tabsize": 4,
+    "tabstospaces": true,
+    "*.md": {
+        "softwrap": true,
+        "colorcolumn": 0,
+        "rmtrailingws": false
+    },
+    "*.py": {
+        "tabsize": 4,
+        "tabstospaces": true,
+        "colorcolumn": 79
+    },
+    "*.go": {
+        "tabstospaces": false
+    },
+    "Makefile": {
+        "tabstospaces": false
+    }
+}

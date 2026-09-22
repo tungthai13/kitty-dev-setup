@@ -1,0 +1,30 @@
+# ~/.config/yazi/yazi.toml
+
+[mgr]
+ratio          = [1, 3, 4]   # parent : current : preview
+show_hidden    = false
+show_symlink   = true
+sort_by        = "natural"
+sort_dir_first = true
+linemode       = "size"
+scrolloff      = 5
+
+[preview]
+max_width  = 1200
+max_height = 1800
+wrap       = "yes"
+
+[opener]
+edit = [
+	{ run = '${EDITOR:-micro} "$@"', desc = "Edit", block = true, for = "unix" },
+]
+
+[[plugin.prepend_fetchers]]
+url   = "*"
+run   = "git"
+group = "git"
+
+[[plugin.prepend_fetchers]]
+url   = "*/"
+run   = "git"
+group = "git"
