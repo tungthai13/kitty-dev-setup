@@ -18,12 +18,6 @@ on   = "!"
 run  = 'shell "$SHELL" --block'
 desc = "Open $SHELL here"
 
-# G -- lazygit here (no-op until lazygit is installed)
-[[mgr.prepend_keymap]]
-on   = "G"
-run  = 'shell "lazygit" --block'
-desc = "Lazygit here"
-
 # Enter -- cd into a directory, or open a file
 [[mgr.prepend_keymap]]
 on   = "<Enter>"

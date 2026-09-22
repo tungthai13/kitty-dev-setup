@@ -40,7 +40,6 @@ three when you want three.
 | Integrated terminal | `Ctrl+Shift+Enter` |
 | New terminal opens in the project | `Ctrl+Shift+Enter` — see below |
 | Ctrl+click `file:line` | `Ctrl+Shift+P` then `N` |
-| Source control panel | `G` in yazi (lazygit) |
 
 No tmux. kitty's own `splits` layout does the panes, so there is no extra
 render layer between you and the terminal — which is the whole point if you
@@ -123,7 +122,7 @@ works, but the new pane is **local** — `ssh` again inside it.
 
 | Tool | Replaces | Wired up as |
 |---|---|---|
-| `lazygit` | VS Code source-control panel | `lg`, or `G` inside yazi |
+| `lazygit` | VS Code source-control panel | type `lazygit` |
 | `delta` | VS Code diff view | git's pager — `git diff`/`log`/`show` |
 | `fd` | VS Code file search | fzf's traversal backend |
 | `bat` | VS Code syntax highlighting | fzf previews, `$MANPAGER` |
@@ -161,12 +160,11 @@ came from here. None of them did.
 | <kbd>C</kbd> | Claude Code in this directory | — (free) |
 | <kbd>Alt</kbd>+<kbd>c</kbd> | Claude Code, seeded with the hovered file | — (free) |
 | <kbd>!</kbd> | Shell here | — (free) |
-| <kbd>G</kbd> | lazygit here | "Go to bottom" |
 | <kbd>Enter</kbd> | Enter directory / open file (smart-enter) | "Open selected files" |
 
-<kbd>G</kbd> and <kbd>Enter</kbd> are the only tool defaults this repo takes
-over anywhere. <kbd>g</kbd> then <kbd>g</kbd> still goes to the top; use
-<kbd>End</kbd> for the bottom.
+<kbd>Enter</kbd> is the only tool default this repo takes over anywhere, and it
+only adds a case: on a directory it enters it, on a file it still does yazi's
+`open`. Run lazygit by typing `lazygit`.
 
 ---
 
