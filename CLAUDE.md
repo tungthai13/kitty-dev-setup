@@ -17,6 +17,7 @@ live edit.
 
 ```
 bin/kdev                 workspace launcher: -t new tab, -w new OS window
+bin/kpane                add ONE pane (files|shell|claude) to this tab
 shell/dev-workspace.bash all shell functions, incl. the kdev that fills the
                          current tab; sourced from ~/.bashrc
 kitty/local.conf         kitty options + keybindings (included from kitty.conf)
@@ -72,7 +73,7 @@ for t in json.load(sys.stdin)[0]['tabs']:
     print(t['title'])
     for w in t['windows']:
         print('  ', w.get('title'), w['columns'], w['lines'], w.get('neighbors'))"
-kitten @ --to $SOCK close-os-window
+kitten @ --to $SOCK close-tab --match all
 ```
 
 `ls` output has no `geometry` field in kitty 0.49 — use `columns`, `lines`
@@ -80,7 +81,10 @@ and `neighbors` to check placement.
 
 Never use `pkill -f <pattern>` to clean up: the pattern matches the agent's
 own shell command line and kills the session. Close instances with
-`kitten @ --to $SOCK close-os-window`.
+`kitten @ --to $SOCK close-tab --match all`. `close-os-window` is NOT a
+`kitten @` subcommand in kitty 0.49 -- it errors. If the socket is already
+gone, read the pid (`ps -eo pid,args | grep '[l]isten-on unix:/tmp/kt.sock'`)
+and `kill` it.
 
 ## Gotchas that have already cost time
 
@@ -120,7 +124,8 @@ or another program must live in `bin/`, not in `shell/`.
 
 **Do not clobber kitty defaults.** `kitty_mod` + `left/right/up/down/minus/`
 `h/j/k/l/z/g/e` are all bound by kitty. An earlier version broke tab switching
-and font sizing. Free keys currently used: `\ ' m p` and `kitty_mod+alt+*`.
+and font sizing. Free keys currently used: `\ ' m p` and `kitty_mod+alt+*`
+(`alt+f/s/c` add one workspace pane; `alt+hjkl`/arrows move focus/panes).
 Check a candidate before binding it:
 
 ```sh
