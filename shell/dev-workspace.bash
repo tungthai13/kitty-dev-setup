@@ -76,17 +76,19 @@ print(1)" | head -1)
     exec claude          # this shell becomes the Claude Code pane
 }
 
-# kd: browse with yazi, quit with `q`, and open the workspace right there.
+# kd: browse with yazi and land in the folder you quit in (press `q`).
+# Just goes there. Open panes afterwards with `kpane` if you want them.
 kd() {
-    y "$@" && kdev
+    y "$@"
 }
 
-# zd: jump with zoxide, then open the workspace. `zd ssi` -> workspace in SSI-Backend
+# zd: jump to a project you have visited before. `zd ssi` -> ~/work/SSI-Backend
+# Plain `zd` gives you a pickable list. Just goes there, nothing else.
 zd() {
     if [ $# -eq 0 ]; then
-        command -v zoxide >/dev/null && { zi && kdev; }
+        command -v zoxide >/dev/null && zi
     else
-        z "$@" && kdev
+        z "$@"
     fi
 }
 
@@ -152,7 +154,6 @@ dev() {
 "pane-shell	Add a shell pane	a terminal below" \
 "pane-claude	Add a Claude Code pane	on the right" \
 "goto	Go to another project	pick from folders you have visited" \
-"goto-work	Go to another project AND open workspace	the usual way to start" \
 "file	Find a file and edit it	fuzzy search, opens in micro" \
 "folder	Find a folder and go there	fuzzy search below here" \
 "root	Go to the top of this project	git repo root" \
@@ -174,7 +175,6 @@ dev() {
         pane-shell)  kpane shell ;;
         pane-claude) kpane claude ;;
         goto)       zi ;;
-        goto-work)  zi && kdev ;;
         file)       f ;;
         folder)     cdf ;;
         root)       cdg ;;

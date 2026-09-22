@@ -108,16 +108,19 @@ back to a new window.
 
 ### Getting to a directory fast
 
-Ranked by how fast they are, not by how clever:
+These only `cd`. They do not open panes — add those yourself afterwards with
+`kpane`, or all three at once with `kdev`.
 
 | You want | Do this |
 |---|---|
-| A repo you've opened before | `zd ssi` — zoxide jump + workspace, one word |
-| Pick from everywhere you've been | `zd` — interactive zoxide list, then workspace |
-| Browse to find it | `kd` — yazi opens, navigate, press `q`, workspace opens there |
-| Already browsing in yazi | press `K` — workspace opens in the current directory |
+| A repo you've opened before | `zd ssi` — zoxide jump, one word |
+| Pick from everywhere you've been | `zd` — interactive zoxide list |
+| Browse to find it | `y` (or `kd`) — yazi opens, navigate, press `q` |
 | Somewhere below here | `cdf` — fuzzy directory picker |
 | Back to the repo root | `cdg` |
+
+`K` inside yazi still opens the full workspace in the folder you are on, since
+that one is a deliberate "I want all three panes here".
 
 `kdev` and `kpane` are scripts on `$PATH` (`bin/`), so they work from yazi,
 scripts and any shell — not just an interactive bash session.
