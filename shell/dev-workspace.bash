@@ -76,16 +76,6 @@ print(1)" | head -1)
     exec claude          # this shell becomes the Claude Code pane
 }
 
-# zd: jump to a project you have visited before. `zd ssi` -> ~/work/SSI-Backend
-# Plain `zd` gives you a pickable list. Just goes there, nothing else.
-zd() {
-    if [ $# -eq 0 ]; then
-        command -v zoxide >/dev/null && zi
-    else
-        z "$@"
-    fi
-}
-
 # e: open a file in micro, accepting Claude's path:line format
 e() {
     local target="$1"
@@ -200,8 +190,8 @@ devkeys() {
     keys            this cheat sheet
 
     y               browse with yazi, land where you quit
-    zd ssi          jump to a project you have opened before
-    zd              ...or pick one from a list
+    z ssi           jump to a project you have opened before (zoxide)
+    zi              ...or pick one from a list
 
     f               find a file and open it in micro
     e main.py:42    open that file at that line

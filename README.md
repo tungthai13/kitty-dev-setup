@@ -113,8 +113,8 @@ These only `cd`. They do not open panes — add those yourself afterwards with
 
 | You want | Do this |
 |---|---|
-| A repo you've opened before | `zd ssi` — zoxide jump, one word |
-| Pick from everywhere you've been | `zd` — interactive zoxide list |
+| A repo you've opened before | `z ssi` — zoxide's own jump, one word |
+| Pick from everywhere you've been | `zi` — zoxide's interactive list |
 | Browse to find it | `y` — yazi opens, navigate, press `q` |
 | Somewhere below here | `dev` → "Find a folder and go there" |
 | Back to the repo root | `dev` → "Go to the top of this project" |
