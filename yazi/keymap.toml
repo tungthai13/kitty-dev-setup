@@ -9,7 +9,7 @@ desc = "Claude Code here"
 # Alt+C -- open Claude Code seeded with the hovered file
 [[mgr.prepend_keymap]]
 on   = "<A-c>"
-run  = '''shell 'claude "Look at @$0"' --block'''
+run  = '''shell 'claude "Look at @%h"' --block'''
 desc = "Claude Code on hovered file"
 
 # ! -- drop to a shell here

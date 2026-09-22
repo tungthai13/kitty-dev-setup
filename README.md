@@ -70,28 +70,21 @@ On Debian/Ubuntu the `fd` and `bat` binaries are named `fdfind` and `batcat`;
 
 ## kitty keys
 
-`kitty_mod` is <kbd>Ctrl</kbd>+<kbd>Shift</kbd>.
+`kitty_mod` is <kbd>Ctrl</kbd>+<kbd>Shift</kbd>. **Every kitty default still
+works** — this config only binds keys kitty leaves free.
 
 | Key | Does |
 |---|---|
-| `kitty_mod`+<kbd>Enter</kbd> | Split right |
-| `kitty_mod`+<kbd>-</kbd> | Split down |
-| `kitty_mod`+<kbd>h/j/k/l</kbd> | Move focus |
-| `kitty_mod`+<kbd>Alt</kbd>+<kbd>h/j/k/l</kbd> | Move the pane itself |
-| `kitty_mod`+<kbd>z</kbd> | Zoom the focused pane |
-| `kitty_mod`+<kbd>←→↑↓</kbd> | Resize |
+| `kitty_mod`+<kbd>\\</kbd> | Split right |
+| `kitty_mod`+<kbd>'</kbd> | Split down |
+| `kitty_mod`+<kbd>Alt</kbd>+<kbd>h/j/k/l</kbd> | Focus the pane left/down/up/right |
+| `kitty_mod`+<kbd>Alt</kbd>+<kbd>←↓↑→</kbd> | Move the pane itself |
+| `kitty_mod`+<kbd>m</kbd> | Zoom the focused pane (toggle stack layout) |
 | `kitty_mod`+<kbd>p</kbd> then <kbd>n</kbd> | Open a `path:line` from Claude's output in micro |
 | `kitty_mod`+<kbd>p</kbd> then <kbd>f</kbd> | Open any path on screen |
-| `kitty_mod`+<kbd>g</kbd> | Scrollback in a pager |
 
-### Remapped kitty defaults
-
-`local.conf` takes over three default bindings. The replacements:
-
-| Was | Now does | Old function still on |
-|---|---|---|
-| `kitty_mod`+<kbd>-</kbd> (font smaller) | split down | `kitty_mod`+<kbd>Backspace</kbd> resets font |
-| `kitty_mod`+<kbd>←</kbd>/<kbd>→</kbd> (prev/next tab) | resize pane | <kbd>Ctrl</kbd>+<kbd>Tab</kbd> |
+Resizing is kitty's own `kitty_mod`+<kbd>r</kbd> — arrows, then <kbd>Enter</kbd>.
+Tabs, font size, scrollback and `kitty_mod`+<kbd>Enter</kbd> are untouched.
 
 ## yazi keys (on top of the defaults)
 

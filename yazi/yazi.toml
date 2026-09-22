@@ -15,8 +15,9 @@ max_height = 1800
 wrap       = "yes"
 
 [opener]
+# Yazi >= 25.5 templates with %s (all selected) / %h (hovered), not "$@".
 edit = [
-	{ run = '${EDITOR:-micro} "$@"', desc = "Edit", block = true, for = "unix" },
+	{ run = '${EDITOR:-micro} %s', desc = "Edit", block = true, for = "unix" },
 ]
 
 [[plugin.prepend_fetchers]]
