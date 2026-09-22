@@ -52,6 +52,21 @@ processes. If you need to survive an SSH drop, add tmux yourself.
 | `kdev ~/some/repo` | Same, in that directory |
 | `y` | yazi, and `cd` to wherever you quit (press `q`) |
 | `e app/main.py:42` | Open micro at line 42 |
+| `f` | Fuzzy-find a file (fzf + bat preview) and open it |
+| `lg` | lazygit |
+
+## Supporting tools
+
+| Tool | Replaces | Wired up as |
+|---|---|---|
+| `lazygit` | VS Code source-control panel | `lg`, or `G` inside yazi |
+| `delta` | VS Code diff view | git's pager — `git diff`/`log`/`show` |
+| `fd` | VS Code file search | fzf's traversal backend |
+| `bat` | VS Code syntax highlighting | fzf previews, `$MANPAGER` |
+| `ripgrep` | VS Code find-in-files | `rg`, and fzf |
+
+On Debian/Ubuntu the `fd` and `bat` binaries are named `fdfind` and `batcat`;
+`install.sh` symlinks them into `~/.local/bin` under the usual names.
 
 ## kitty keys
 

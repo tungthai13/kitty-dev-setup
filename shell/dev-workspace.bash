@@ -26,3 +26,27 @@ e() {
         *)        micro "$@" ;;
     esac
 }
+
+# --- fzf: use fd for traversal, bat for previews -----------------------
+if command -v fd >/dev/null; then
+    export FZF_DEFAULT_COMMAND='fd --type f --hidden --follow --exclude .git'
+    export FZF_CTRL_T_COMMAND="$FZF_DEFAULT_COMMAND"
+    export FZF_ALT_C_COMMAND='fd --type d --hidden --follow --exclude .git'
+fi
+if command -v bat >/dev/null; then
+    export FZF_CTRL_T_OPTS="--preview 'bat --color=always --style=numbers --line-range=:200 {}'"
+    export BAT_THEME="Nord"
+    # man pages through bat
+    export MANPAGER="sh -c 'col -bx | bat -l man -p'"
+fi
+export FZF_DEFAULT_OPTS="--height 60% --layout=reverse --border=rounded --info=inline"
+
+# f: fuzzy-find a file and open it in $EDITOR
+f() {
+    local file
+    file="$(fzf --preview 'bat --color=always --style=numbers --line-range=:200 {}')" \
+        && [ -n "$file" ] && "${EDITOR:-micro}" "$file"
+}
+
+# lg: lazygit, then land in whatever dir it left you in
+command -v lazygit >/dev/null && alias lg='lazygit'

@@ -29,7 +29,7 @@ ok()   { printf '\033[1;32m[ok]\033[0m %s\n' "$*"; }
 # --------------------------------------------------------------------
 # 1. Packages
 # --------------------------------------------------------------------
-CORE_APT=(kitty micro fzf ripgrep fd-find bat zoxide git curl unzip)
+CORE_APT=(kitty micro fzf ripgrep fd-find bat zoxide lazygit git-delta git curl unzip)
 
 install_packages() {
   if   command -v apt-get >/dev/null; then
@@ -42,13 +42,13 @@ install_packages() {
     command -v batcat  >/dev/null && ln -sf "$(command -v batcat)"  "$HOME/.local/bin/bat"
   elif command -v pacman >/dev/null; then
     say "Installing packages with pacman"
-    sudo pacman -S --needed --noconfirm kitty micro fzf ripgrep fd bat zoxide git curl unzip
+    sudo pacman -S --needed --noconfirm kitty micro fzf ripgrep fd bat zoxide lazygit git-delta git curl unzip
   elif command -v dnf >/dev/null; then
     say "Installing packages with dnf"
-    sudo dnf install -y kitty micro fzf ripgrep fd-find bat zoxide git curl unzip
+    sudo dnf install -y kitty micro fzf ripgrep fd-find bat zoxide lazygit git-delta git curl unzip
   elif command -v brew >/dev/null; then
     say "Installing packages with brew"
-    brew install kitty micro fzf ripgrep fd bat zoxide git
+    brew install kitty micro fzf ripgrep fd bat zoxide lazygit git-delta
   else
     warn "No supported package manager found. Install manually: ${CORE_APT[*]}"
     return
@@ -184,6 +184,22 @@ install_yazi_plugins() {
 }
 
 # --------------------------------------------------------------------
+# 7. git -> delta  (the diff half of VS Code's source-control panel)
+# --------------------------------------------------------------------
+wire_git_delta() {
+  command -v delta >/dev/null || { warn "delta not installed -- skipping git pager config"; return; }
+  say "Pointing git at delta"
+  git config --global core.pager             "delta"
+  git config --global interactive.diffFilter "delta --color-only"
+  git config --global delta.navigate         true
+  git config --global delta.line-numbers     true
+  git config --global delta.hyperlinks       true
+  git config --global merge.conflictstyle    zdiff3
+  git config --global diff.colorMoved        default
+  ok "git diff / log / show now render through delta"
+}
+
+# --------------------------------------------------------------------
 main() {
   say "kitty-dev-setup -- $REPO"
   [ "$SKIP_PKGS" -eq 1 ] || { install_packages; install_yazi; install_claude; }
@@ -192,6 +208,7 @@ main() {
   wire_kitty_conf
   wire_shell
   install_yazi_plugins
+  wire_git_delta
 
   echo
   say "Done. Two things left:"
