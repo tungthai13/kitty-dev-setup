@@ -9,7 +9,72 @@ y() {
     rm -f -- "$tmp"
 }
 
-# kdev now lives in bin/kdev (on $PATH) so yazi and scripts can call it too.
+# ---------------------------------------------------------------------
+# kdev -- build the 3-pane workspace IN THE TAB YOU ARE IN.
+#
+#   kdev            here, in this tab   (yazi left, Claude here, shell below)
+#   kdev <dir>      same, for that directory
+#   kdev -t [dir]   new tab instead
+#   kdev -w [dir]   new OS window instead
+#
+# This has to be a shell function, not a script: the last step replaces
+# THIS shell with Claude Code, and only the shell itself can do that.
+# ---------------------------------------------------------------------
+kdev() {
+    local dir="" arg
+    for arg in "$@"; do
+        case "$arg" in
+            -t|--tab|-w|--window) command kdev "$@"; return $? ;;
+            -h|--help)            command kdev --help; return 0 ;;
+            *)                    dir="$arg" ;;
+        esac
+    done
+
+    dir="${dir:-$PWD}"
+    [ -d "$dir" ] || dir="$(dirname "$dir")"
+    dir="$(cd "$dir" && pwd)" || return 1
+    local name; name="$(basename "$dir")"
+
+    if [ -z "${KITTY_LISTEN_ON:-}" ]; then
+        echo "kdev: kitty remote control is off -- opening a new window instead." >&2
+        echo "      Fully quit and relaunch kitty (listen_on needs a restart)." >&2
+        command kdev -w "$dir"
+        return
+    fi
+
+    # Already split? Don't wreck the layout -- use a fresh tab.
+    local n
+    n=$(kitten @ ls 2>/dev/null | python3 -c "
+import json,sys
+try:
+    for osw in json.load(sys.stdin):
+        for t in osw['tabs']:
+            if any(w.get('is_self') for w in t['windows']):
+                print(len(t['windows'])); raise SystemExit
+except Exception: pass
+print(1)" | head -1)
+    if [ "${n:-1}" -gt 1 ]; then
+        echo "kdev: this tab already has $n panes -- opening a new tab instead." >&2
+        command kdev -t "$dir"
+        return
+    fi
+
+    # Both launches must target THIS window explicitly: each new window
+    # takes focus, so a bare --next-to would split the pane just created.
+    local cur="${KITTY_WINDOW_ID:?}"
+    kitten @ set-tab-title "$name" >/dev/null 2>&1 || true
+    kitten @ launch --type=window --location=before --bias 30 \
+            --cwd "$dir" --window-title files \
+            --next-to "id:$cur" --dont-take-focus yazi >/dev/null || return 1
+    kitten @ launch --type=window --location=hsplit --bias 30 \
+            --cwd "$dir" --window-title shell \
+            --next-to "id:$cur" --dont-take-focus >/dev/null || return 1
+    kitten @ set-window-title --match "id:$cur" claude >/dev/null 2>&1 || true
+    kitten @ focus-window --match "id:$cur" >/dev/null 2>&1 || true
+
+    builtin cd -- "$dir" || return 1
+    exec claude          # this shell becomes the Claude Code pane
+}
 
 # kd: browse with yazi, quit with `q`, and open the workspace right there.
 kd() {

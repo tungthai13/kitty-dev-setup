@@ -1,21 +1,22 @@
 #!/usr/bin/env bash
 # kdev -- open the 3-pane dev workspace for a project.
 #
-#   kdev              new TAB in this kitty window, for $PWD
-#   kdev ~/some/repo  ditto, for that directory
-#   kdev -w [dir]     new OS WINDOW instead of a tab
+# This script handles the NEW TAB and NEW WINDOW forms. The plain `kdev`
+# you type is a shell function (shell/dev-workspace.bash) that builds the
+# layout in the tab you are already in -- a script cannot do that, because
+# it cannot replace the shell that called it with Claude Code.
 #
-# One tab per project is the point: kdev defaults to a tab so you can keep
-# several projects side by side in one kitty window.
+#   kdev -t [dir]   new tab in this kitty window
+#   kdev -w [dir]   new OS window
 set -euo pipefail
 
-want_window=0
+mode="tab"
 dir=""
 while [ $# -gt 0 ]; do
     case "$1" in
-        -w|--window) want_window=1 ;;
-        -t|--tab)    want_window=0 ;;
-        -h|--help)   sed -n '2,9p' "$0" | sed 's/^# \{0,1\}//'; exit 0 ;;
+        -w|--window) mode="window" ;;
+        -t|--tab)    mode="tab" ;;
+        -h|--help)   sed -n '2,11p' "$0" | sed 's/^# \{0,1\}//'; exit 0 ;;
         *)           dir="$1" ;;
     esac
     shift
@@ -25,7 +26,6 @@ dir="${dir:-$PWD}"
 [ -d "$dir" ] || dir="$(dirname "$dir")"
 dir="$(cd "$dir" && pwd)"
 name="$(basename "$dir")"
-
 session="${XDG_CONFIG_HOME:-$HOME/.config}/kitty/dev.session"
 
 open_os_window() {
@@ -35,9 +35,6 @@ open_os_window() {
 }
 
 open_tab() {
-    # yazi on the left; claude takes 70% of the width; shell takes 30% of
-    # claude's column.  --match picks the tab, --next-to picks the window
-    # inside it that gets split.
     local w1 w2
     w1=$(kitten @ launch --type=tab --tab-title "$name" \
             --cwd "$dir" --window-title files yazi) || return 1
@@ -50,19 +47,13 @@ open_tab() {
     kitten @ focus-window --match "id:$w2" >/dev/null || true
 }
 
-if [ "$want_window" -eq 1 ]; then
+if [ "$mode" = "window" ] || [ -z "${KITTY_LISTEN_ON:-}" ]; then
+    [ "$mode" = "tab" ] && {
+        echo "kdev: kitty remote control is off -- opening a window instead." >&2
+        echo "      Fully quit and relaunch kitty (listen_on needs a restart)." >&2
+    }
     open_os_window
     exit 0
 fi
 
-if [ -z "${KITTY_LISTEN_ON:-}" ]; then
-    echo "kdev: kitty remote control is off, opening a new window instead." >&2
-    echo "      Fully quit and relaunch kitty to enable tabs (listen_on needs a restart)." >&2
-    open_os_window
-    exit 0
-fi
-
-open_tab || {
-    echo "kdev: could not create a tab, falling back to a new window." >&2
-    open_os_window
-}
+open_tab || { echo "kdev: tab failed, using a new window." >&2; open_os_window; }
