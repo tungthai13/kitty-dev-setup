@@ -16,23 +16,26 @@ live edit.
 ## Layout
 
 ```
-bin/kdev                 workspace launcher: -t new tab, -w new OS window
-bin/kpane                add ONE pane (files|shell|claude) to this tab
-shell/dev-workspace.bash all shell functions, incl. the kdev that fills the
-                         current tab; sourced from ~/.bashrc
-kitty/local.conf         kitty options + keybindings (included from kitty.conf)
-kitty/dev.session        3-pane layout, only used by `kdev -w`
+shell/dev-workspace.bash three things only: `dev` (fzf menu), `f` (yazi+cd;
+                         f as in files/folders), `e` (micro at path:line);
+                         sourced from ~/.bashrc
+kitty/local.conf         kitty settings + three `map` lines
 yazi/{yazi,keymap,package}.toml, yazi/init.lua
 micro/settings.json
 install.sh / uninstall.sh
 ```
+
+There is no `bin/` and no session file. `kdev`, `kpane`, `kd`, `zd`, `cdf`,
+`cdg`, `f` (the old fzf picker), `lg`, `devkeys`/`keys` and `?` all existed and
+were **deliberately removed** -- see "What this repo does not do". Do not
+recreate them.
 
 ## Verify before you claim it works
 
 There is no test suite. Run the checks that apply to what you touched:
 
 ```sh
-bash -n install.sh uninstall.sh bin/kdev shell/dev-workspace.bash
+bash -n install.sh uninstall.sh shell/dev-workspace.bash
 
 python3 -c "import tomllib,pathlib
 for f in ['yazi/yazi.toml','yazi/keymap.toml','yazi/package.toml']:
@@ -46,15 +49,14 @@ from kitty.config import load_config
 c = load_config(os.path.expanduser("~/.config/kitty/kitty.conf"))
 print(c.enabled_layouts, c.editor)'
 
-# session file parses
+# every key: 68 kitty defaults, 69 total, 1 added (kitty_mod+'), 0 removed
 kitty +runpy 'import os
 from kitty.config import load_config
-from kitty.session import parse_session
-o = load_config(os.path.expanduser("~/.config/kitty/kitty.conf"))
-for s in parse_session(open(os.path.expanduser("~/.config/kitty/dev.session")).read(), o):
-    for t in s.tabs:
-        for w in t.windows:
-            print(list(w.launch_spec.args), w.launch_spec.opts.location, w.launch_spec.opts.bias)'
+d = load_config("NONE")
+m = load_config(os.path.expanduser("~/.config/kitty/kitty.conf"))
+dk, mk = d.keyboard_modes[""].keymap, m.keyboard_modes[""].keymap
+print("added:", len([k for k in mk if k not in dk]),
+      "removed:", len([k for k in dk if k not in mk]))'
 ```
 
 ### Testing kitty layout changes for real
@@ -115,12 +117,6 @@ is ignored for the first window in a tab.
 **`listen_on` only applies at kitty startup.** `Ctrl+Shift+F5` will not enable
 remote control; the user must fully quit and relaunch kitty. Code that needs
 `kitten @` must check `$KITTY_LISTEN_ON` and degrade gracefully.
-
-**`kdev` is both a script and a shell function, deliberately.** The in-place
-form ends with `exec claude`, replacing the calling shell with the Claude Code
-pane — only a shell function can do that. `bin/kdev` handles `-t` and `-w`, and
-the function delegates to it with `command kdev`. Anything callable from yazi
-or another program must live in `bin/`, not in `shell/`.
 
 **yazi defaults get clobbered too -- check them.** yazi's own keymap is
 compiled into the binary; read it with

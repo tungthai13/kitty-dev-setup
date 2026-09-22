@@ -1,5 +1,6 @@
-# yazi: cd to the directory you quit in (press q to cd, Q to stay)
-y() {
+# f -- files/folders. Opens yazi, and when you quit with `q` your shell
+# lands in the directory you were browsing (Q quits without moving).
+f() {
     local tmp cwd
     tmp="$(mktemp -t yazi-cwd.XXXXXX)"
     yazi "$@" --cwd-file="$tmp"
@@ -55,7 +56,7 @@ dev() {
     key="${choice%%	*}"
 
     case "$key" in
-        browse) y ;;
+        browse) f ;;
         goto)   zi ;;
         file)   local f
                 f="$(fzf --preview 'bat --color=always --style=numbers --line-range=:200 {}')" \

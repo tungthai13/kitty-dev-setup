@@ -66,7 +66,7 @@ This repo adds three, and nothing else:
 | Command | Does |
 |---|---|
 | `dev` | The menu |
-| `y` | yazi, and `cd` to wherever you quit (press `q`) |
+| `f` | **f**iles/folders — yazi, and `cd` to wherever you quit (press `q`) |
 | `e app/main.py:42` | Open micro at line 42 |
 
 Everything else you use is the tool's own: `z` / `zi` (zoxide), `lazygit`,
@@ -78,7 +78,7 @@ Everything else you use is the tool's own: `z` / `zi` (zoxide), `lazygit`,
 |---|---|
 | A repo you've opened before | `z ssi` — zoxide's own jump, one word |
 | Pick from everywhere you've been | `zi` — zoxide's interactive list |
-| Browse to find it | `y` — yazi opens, navigate, press `q` |
+| Browse to find it | `f` — yazi opens, navigate, press `q` |
 | Somewhere below here | `dev` → "Find a folder and go there" |
 | Back to the repo root | `dev` → "Go to the top of this project" |
 
@@ -191,7 +191,7 @@ To start Claude Code, a shell or lazygit in the folder you are browsing, press
 kitty/local.conf      kitty settings, 2 key lines   -> ~/.config/kitty/local.conf
 yazi/*.toml, init.lua yazi config + plugins         -> ~/.config/yazi/
 micro/settings.json   editor settings               -> ~/.config/micro/settings.json
-shell/dev-workspace.bash   dev / y / e              -> sourced from ~/.bashrc
+shell/dev-workspace.bash   dev / f / e              -> sourced from ~/.bashrc
 install.sh            does all of the above
 uninstall.sh          undoes the symlinks and the shell block
 ```
