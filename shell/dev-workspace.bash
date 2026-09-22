@@ -76,12 +76,6 @@ print(1)" | head -1)
     exec claude          # this shell becomes the Claude Code pane
 }
 
-# kd: browse with yazi and land in the folder you quit in (press `q`).
-# Just goes there. Open panes afterwards with `kpane` if you want them.
-kd() {
-    y "$@"
-}
-
 # zd: jump to a project you have visited before. `zd ssi` -> ~/work/SSI-Backend
 # Plain `zd` gives you a pickable list. Just goes there, nothing else.
 zd() {
