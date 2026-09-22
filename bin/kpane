@@ -1,0 +1,43 @@
+#!/usr/bin/env bash
+# kpane -- add ONE pane to the tab you are in, instead of all three.
+#
+#   kpane files [dir]    yazi, on the left      (30%)
+#   kpane shell [dir]    a shell, below         (30%)
+#   kpane claude [dir]   Claude Code, on the right (70%)
+#
+# Each pane lands in the same slot `kdev` would put it, so the layout
+# converges on the familiar shape whatever order you add them in.
+# Close a pane with Ctrl+Shift+W, or just `exit`.
+#
+# Without kitty remote control (plain terminal, or over SSH -- the socket
+# is not forwarded) there is no way to make a new pane from a script, so
+# the program runs in THIS pane instead. The kitty keybindings
+# Ctrl+Shift+Alt+f/s/c do not need remote control and always split.
+set -euo pipefail
+
+what="${1:-}"
+dir="${2:-$PWD}"
+
+case "$what" in
+    files|f)   title=files;  loc=before; bias=30; cmd=(yazi) ;;
+    shell|s)   title=shell;  loc=hsplit; bias=30; cmd=() ;;
+    claude|c)  title=claude; loc=vsplit; bias=70; cmd=(claude) ;;
+    -h|--help|"") sed -n '2,13p' "$0" | sed 's/^# \{0,1\}//'; exit 0 ;;
+    *) echo "kpane: unknown pane '$what' -- try files, shell or claude" >&2; exit 1 ;;
+esac
+
+[ -d "$dir" ] || dir="$(dirname "$dir")"
+dir="$(cd "$dir" && pwd)"
+
+# No remote control: run it here rather than failing.
+if [ -z "${KITTY_LISTEN_ON:-}" ] || [ -z "${KITTY_WINDOW_ID:-}" ]; then
+    echo "kpane: kitty remote control is off -- running here instead of in a new pane." >&2
+    cd "$dir"
+    if [ ${#cmd[@]} -eq 0 ]; then exec "${SHELL:-/bin/bash}"; else exec "${cmd[@]}"; fi
+fi
+
+# --next-to must name THIS window explicitly: every launched window takes
+# focus, so a bare --next-to would split the pane we just made.
+kitten @ launch --type=window --location="$loc" --bias "$bias" \
+        --cwd "$dir" --window-title "$title" \
+        --next-to "id:$KITTY_WINDOW_ID" "${cmd[@]}" >/dev/null

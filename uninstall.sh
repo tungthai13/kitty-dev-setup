@@ -12,6 +12,10 @@ for f in kitty/local.conf kitty/dev.session \
   [ -L "$CFG/$f" ] && rm -v "$CFG/$f"
 done
 
+for b in kdev kpane; do
+  [ -L "$HOME/.local/bin/$b" ] && rm -v "$HOME/.local/bin/$b"
+done
+
 for rc in "$HOME/.bashrc" "$HOME/.zshrc"; do
   [ -f "$rc" ] || continue
   if grep -qF "$MARK_BEGIN" "$rc"; then

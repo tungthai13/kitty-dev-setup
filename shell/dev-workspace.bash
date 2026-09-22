@@ -148,6 +148,9 @@ dev() {
     choice="$(printf '%s\n' \
 "browse	Browse files here	yazi - arrows to move, q to come back" \
 "workspace	Open the 3-pane workspace here	yazi + Claude Code + shell" \
+"pane-files	Add a file browser pane	yazi on the left" \
+"pane-shell	Add a shell pane	a terminal below" \
+"pane-claude	Add a Claude Code pane	on the right" \
 "goto	Go to another project	pick from folders you have visited" \
 "goto-work	Go to another project AND open workspace	the usual way to start" \
 "file	Find a file and edit it	fuzzy search, opens in micro" \
@@ -167,6 +170,9 @@ dev() {
     case "$key" in
         browse)     y ;;
         workspace)  kdev ;;
+        pane-files)  kpane files ;;
+        pane-shell)  kpane shell ;;
+        pane-claude) kpane claude ;;
         goto)       zi ;;
         goto-work)  zi && kdev ;;
         file)       f ;;
@@ -192,8 +198,12 @@ devkeys() {
     !               a shell here
 
   INSIDE KITTY (the terminal, panes)
-    Ctrl+Shift+\            split right
-    Ctrl+Shift+'            split down
+    Ctrl+Shift+Alt+f        add a file browser pane (left)
+    Ctrl+Shift+Alt+s        add a shell pane (below)
+    Ctrl+Shift+Alt+c        add a Claude Code pane (right)
+    Ctrl+Shift+w            close this pane
+    Ctrl+Shift+\            split right (empty shell)
+    Ctrl+Shift+'            split down (empty shell)
     Ctrl+Shift+Alt+h j k l  move between panes
     Ctrl+Shift+m            make this pane full screen (and back)
     Ctrl+Shift+r            resize mode: arrows, then Enter
@@ -204,6 +214,8 @@ devkeys() {
   TYPED COMMANDS
     dev             this menu
     keys            this cheat sheet
+    kdev            all three panes at once
+    kpane files     add one pane: files | shell | claude
 
 CHEAT
 }

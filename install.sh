@@ -126,6 +126,8 @@ link_configs() {
   mkdir -p "$HOME/.local/bin"
   ln -sf "$REPO/bin/kdev" "$HOME/.local/bin/kdev"
   ok "~/.local/bin/kdev"
+  ln -sf "$REPO/bin/kpane" "$HOME/.local/bin/kpane"
+  ok "~/.local/bin/kpane"
   case ":$PATH:" in
     *":$HOME/.local/bin:"*) ;;
     *) warn "~/.local/bin is not on \$PATH -- add it to your shell rc" ;;

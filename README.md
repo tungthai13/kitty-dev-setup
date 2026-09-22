@@ -70,10 +70,41 @@ menu; ignore it otherwise.
 | `kdev ~/some/repo` | Same, for that directory |
 | `kdev -t` | New tab instead |
 | `kdev -w` | New OS window instead |
+| `kpane files` | Add **one** pane: yazi on the left |
+| `kpane shell` | Add **one** pane: a shell below |
+| `kpane claude` | Add **one** pane: Claude Code on the right |
 | `y` | yazi, and `cd` to wherever you quit (press `q`) |
 | `e app/main.py:42` | Open micro at line 42 |
 | `f` | Fuzzy-find a file (fzf + bat preview) and open it |
 | `lg` | lazygit |
+
+### One pane at a time
+
+`kdev` gives you all three panes. Most of the time you want fewer — just a
+shell for `docker compose`, just yazi to look around, just Claude Code. Start
+with one pane and add the others when you need them:
+
+| You want | Do |
+|---|---|
+| Just read a file | `e path/to/file` (or `y`, then <kbd>Enter</kbd>) |
+| Just a terminal | a plain tab — `kitty_mod`+<kbd>t</kbd> |
+| Just browse files | `y` |
+| Just Claude Code | `claude` |
+| ...and now a shell too | `kitty_mod`+<kbd>Alt</kbd>+<kbd>s</kbd> |
+| ...and now the file tree | `kitty_mod`+<kbd>Alt</kbd>+<kbd>f</kbd> |
+| Done with a pane | `kitty_mod`+<kbd>w</kbd>, or type `exit` |
+
+Each pane lands in the slot `kdev` would have used, so however you build it up
+you end up with the same layout. The keys work even when kitty's remote control
+is off; `kpane` (the typed form) needs it.
+
+### Over SSH
+
+kitty runs on your machine, the remote shell cannot reach it.
+`kitty_mod`+<kbd>Alt</kbd>+<kbd>f/s/c</kbd> still work, but the new pane is
+**local** — `ssh` again inside it. `kdev` and `kpane` typed on the remote host
+have no socket to talk to: `kpane` runs the program in the current pane instead,
+and `kdev` falls back to a new window.
 
 ### Getting to a directory fast
 
@@ -88,8 +119,8 @@ Ranked by how fast they are, not by how clever:
 | Somewhere below here | `cdf` — fuzzy directory picker |
 | Back to the repo root | `cdg` |
 
-`kdev` is a script on `$PATH` (`bin/kdev`), so it works from yazi, scripts and
-any shell — not just an interactive bash session.
+`kdev` and `kpane` are scripts on `$PATH` (`bin/`), so they work from yazi,
+scripts and any shell — not just an interactive bash session.
 
 ## Supporting tools
 
@@ -111,8 +142,12 @@ works** — this config only binds keys kitty leaves free.
 
 | Key | Does |
 |---|---|
-| `kitty_mod`+<kbd>\\</kbd> | Split right |
-| `kitty_mod`+<kbd>'</kbd> | Split down |
+| `kitty_mod`+<kbd>Alt</kbd>+<kbd>f</kbd> | Add a file browser pane (left, 30%) |
+| `kitty_mod`+<kbd>Alt</kbd>+<kbd>s</kbd> | Add a shell pane (below, 30%) |
+| `kitty_mod`+<kbd>Alt</kbd>+<kbd>c</kbd> | Add a Claude Code pane (right, 70%) |
+| `kitty_mod`+<kbd>w</kbd> | Close this pane (kitty's own key) |
+| `kitty_mod`+<kbd>\\</kbd> | Split right (plain shell) |
+| `kitty_mod`+<kbd>'</kbd> | Split down (plain shell) |
 | `kitty_mod`+<kbd>Alt</kbd>+<kbd>h/j/k/l</kbd> | Focus the pane left/down/up/right |
 | `kitty_mod`+<kbd>Alt</kbd>+<kbd>←↓↑→</kbd> | Move the pane itself |
 | `kitty_mod`+<kbd>m</kbd> | Zoom the focused pane (toggle stack layout) |
@@ -142,6 +177,8 @@ kitty/local.conf      kitty options + keybindings   -> ~/.config/kitty/local.con
 kitty/dev.session     the 3-pane layout             -> ~/.config/kitty/dev.session
 yazi/*.toml, init.lua yazi config + plugins         -> ~/.config/yazi/
 micro/settings.json   editor settings               -> ~/.config/micro/settings.json
+bin/kdev              all three panes at once       -> ~/.local/bin/kdev
+bin/kpane             add one pane at a time        -> ~/.local/bin/kpane
 shell/dev-workspace.bash   y / kdev / e functions   -> sourced from ~/.bashrc
 install.sh            does all of the above
 uninstall.sh          undoes the symlinks and the shell block
