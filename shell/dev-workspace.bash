@@ -47,6 +47,7 @@ dev() {
 "folder	Find a folder and go there	fuzzy search below here" \
 "root	Go to the top of this project	git repo root" \
 "claude	Start Claude Code here	" \
+"docker	Manage Docker containers	lazydocker - logs, restart, remove" \
         | fzf --delimiter='\t' --with-nth=2,3 \
               --prompt='what do you want to do? ' \
               --header=$'\n  type to filter . Enter to run . Esc to cancel\n' \
@@ -69,5 +70,6 @@ dev() {
                 r="$(git rev-parse --show-toplevel 2>/dev/null)" \
                     && builtin cd -- "$r" || echo "not in a git repo" >&2 ;;
         claude) claude ;;
+        docker) lazydocker ;;
     esac
 }

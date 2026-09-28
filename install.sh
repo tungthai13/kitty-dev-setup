@@ -51,7 +51,7 @@ install_packages() {
     say "Installing packages with brew"
     brew install kitty micro fzf ripgrep fd bat zoxide lazygit git-delta
   else
-    warn "No supported package manager found. Install manually: ${CORE_APT[*]}"
+    warn "No supported package manager found. Install manually: ${CORE_APT[*]} lazydocker"
     return
   fi
   ok "packages"
@@ -75,6 +75,42 @@ install_claude() {
   if command -v claude >/dev/null; then ok "Claude Code already installed ($(claude --version))"; return; fi
   say "Installing Claude Code"
   curl -fsSL https://claude.ai/install.sh | bash || warn "Claude Code install failed -- see https://docs.claude.com/en/docs/claude-code"
+}
+
+install_lazydocker() {
+  if command -v lazydocker >/dev/null; then
+    ok "lazydocker already installed ($(lazydocker --version | head -1))"; return
+  fi
+  say "Installing lazydocker"
+  if command -v brew >/dev/null; then brew install lazydocker; ok "lazydocker"; return; fi
+
+  # No distro ships it: apt/dnf have no package and Arch's is AUR-only. Take the
+  # release tarball. The version is *in* the filename, so /releases/latest/download/
+  # cannot be used -- resolve the tag first. Upstream's install script unpacks into
+  # $PWD and leaves debris there on failure; this does the same work in a tmpdir.
+  local arch tag tmp
+  case "$(uname -m)" in
+    x86_64)  arch=x86_64 ;;
+    aarch64|arm64) arch=arm64 ;;
+    armv7*)  arch=armv7 ;;
+    armv6*)  arch=armv6 ;;
+    i386|i686) arch=x86 ;;
+    *) warn "no lazydocker build for $(uname -m) -- skipping"; return ;;
+  esac
+  tag="$(curl -fsSLI -o /dev/null -w '%{url_effective}' \
+         https://github.com/jesseduffield/lazydocker/releases/latest)" || {
+    warn "could not reach GitHub -- skipping lazydocker"; return; }
+  tag="${tag##*/}"
+  tmp="$(mktemp -d)"
+  if curl -fL --retry 3 -o "$tmp/ld.tar.gz" \
+       "https://github.com/jesseduffield/lazydocker/releases/download/$tag/lazydocker_${tag#v}_$(uname -s)_$arch.tar.gz" \
+     && tar -xzf "$tmp/ld.tar.gz" -C "$tmp" lazydocker; then
+    install -Dm755 "$tmp/lazydocker" "$HOME/.local/bin/lazydocker"
+    ok "lazydocker $tag -> ~/.local/bin"
+  else
+    warn "lazydocker download failed -- see https://github.com/jesseduffield/lazydocker"
+  fi
+  rm -rf "$tmp"
 }
 
 # --------------------------------------------------------------------
@@ -202,7 +238,7 @@ wire_git_delta() {
 # --------------------------------------------------------------------
 main() {
   say "kitty-dev-setup -- $REPO"
-  [ "$SKIP_PKGS" -eq 1 ] || { install_packages; install_yazi; install_claude; }
+  [ "$SKIP_PKGS" -eq 1 ] || { install_packages; install_yazi; install_claude; install_lazydocker; }
   [ "$SKIP_FONT" -eq 1 ] || install_font
   link_configs
   wire_kitty_conf

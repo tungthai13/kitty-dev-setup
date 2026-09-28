@@ -70,7 +70,7 @@ This repo adds three, and nothing else:
 | `e app/main.py:42` | Open micro at line 42 |
 
 Everything else you use is the tool's own: `z` / `zi` (zoxide), `lazygit`,
-`claude`, `micro`, `yazi`, `rg`, `fd`, `bat`.
+`lazydocker`, `claude`, `micro`, `yazi`, `rg`, `fd`, `bat`.
 
 ### Getting to a directory fast
 
@@ -137,6 +137,7 @@ works, but the new pane is **local** — `ssh` again inside it.
 | Tool | Replaces | Wired up as |
 |---|---|---|
 | `lazygit` | VS Code source-control panel | type `lazygit` |
+| `lazydocker` | Docker Desktop's container list | type `lazydocker`, or `dev` → "Manage Docker containers" |
 | `delta` | VS Code diff view | git's pager — `git diff`/`log`/`show` |
 | `fd` | VS Code file search | fzf's traversal backend |
 | `bat` | VS Code syntax highlighting | fzf previews, `$MANPAGER` |

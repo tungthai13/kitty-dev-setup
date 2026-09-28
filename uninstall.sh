@@ -12,6 +12,10 @@ for f in kitty/local.conf kitty/dev.session \
   [ -L "$CFG/$f" ] && rm -v "$CFG/$f"
 done
 
+# lazydocker: only the copy install.sh downloaded into ~/.local/bin. A brew or
+# distro package is left alone, like every other package this repo installs.
+[ -f "$HOME/.local/bin/lazydocker" ] && rm -v "$HOME/.local/bin/lazydocker"
+
 # kdev / kpane were removed from this repo; clean up older installs.
 for b in kdev kpane; do
   [ -L "$HOME/.local/bin/$b" ] && rm -v "$HOME/.local/bin/$b"
