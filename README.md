@@ -262,6 +262,18 @@ newer Node (for example from NodeSource), then run
 reloaded. Check `fc-list | grep -i "nerd font"`, then *fully quit* kitty —
 `Ctrl+Shift+F5` reloads the config but not the font cache.
 
+**Icons are `▯` boxes in VS Code's terminal** (including VS Code Remote-SSH).
+VS Code draws the terminal on your own machine with its own font setting, not
+kitty's. Add this to your *local* VS Code settings (`Ctrl+Shift+P` → "Open
+User Settings (JSON)"), then open a new terminal:
+
+```json
+"terminal.integrated.fontFamily": "JetBrainsMono Nerd Font",
+```
+
+Nothing is needed on the server — fonts are never read there. If the icons
+still show as boxes, fully quit and reopen VS Code; it reads fonts at startup.
+
 **Icons render but columns misalign.** You are on the `Mono` font variant.
 Use `font_family JetBrainsMono Nerd Font` (no trailing `Mono`) — yazi expects
 double-width icons.
