@@ -13,13 +13,15 @@ MARK_END="# <<< kitty-dev-setup <<<"
 SKIP_PKGS=0
 SKIP_FONT=0
 ONLY_STATUSLINE=0
+REMOTE=0
 for arg in "$@"; do
   case "$arg" in
     --no-packages) SKIP_PKGS=1 ;;
     --no-font)     SKIP_FONT=1 ;;
     --statusline-only) ONLY_STATUSLINE=1 ;;
+    --remote)      REMOTE=1; SKIP_FONT=1 ;;
     -h|--help)
-      echo "usage: ./install.sh [--no-packages] [--no-font] [--statusline-only]"; exit 0 ;;
+      echo "usage: ./install.sh [--no-packages] [--no-font] [--statusline-only] [--remote]"; exit 0 ;;
     *) echo "unknown flag: $arg" >&2; exit 2 ;;
   esac
 done
@@ -34,26 +36,36 @@ ok()   { printf '\033[1;32m[ok]\033[0m %s\n' "$*"; }
 CORE_APT=(kitty micro fzf ripgrep fd-find bat zoxide lazygit git-delta git curl unzip
           wl-clipboard xclip nodejs npm)
 
+# --remote: a server you reach with `kitten ssh`. kitty runs on your own machine,
+# and wl-clipboard/xclip need a desktop session the server does not have.
+pkgs() {
+  local p
+  for p in "$@"; do
+    if [ "$REMOTE" -eq 1 ]; then case "$p" in kitty|wl-clipboard|xclip) continue ;; esac; fi
+    printf '%s\n' "$p"
+  done
+}
+
 install_packages() {
   if   command -v apt-get >/dev/null; then
     say "Installing packages with apt"
     sudo apt-get update -qq
-    sudo apt-get install -y "${CORE_APT[@]}"
+    sudo apt-get install -y $(pkgs "${CORE_APT[@]}")
     # Debian names these differently; add shims.
     mkdir -p "$HOME/.local/bin"
     command -v fdfind  >/dev/null && ln -sf "$(command -v fdfind)"  "$HOME/.local/bin/fd"
     command -v batcat  >/dev/null && ln -sf "$(command -v batcat)"  "$HOME/.local/bin/bat"
   elif command -v pacman >/dev/null; then
     say "Installing packages with pacman"
-    sudo pacman -S --needed --noconfirm kitty micro fzf ripgrep fd bat zoxide lazygit git-delta git curl unzip wl-clipboard xclip nodejs npm
+    sudo pacman -S --needed --noconfirm $(pkgs kitty micro fzf ripgrep fd bat zoxide lazygit git-delta git curl unzip wl-clipboard xclip nodejs npm)
   elif command -v dnf >/dev/null; then
     say "Installing packages with dnf"
-    sudo dnf install -y kitty micro fzf ripgrep fd-find bat zoxide lazygit git-delta git curl unzip wl-clipboard xclip nodejs npm
+    sudo dnf install -y $(pkgs kitty micro fzf ripgrep fd-find bat zoxide lazygit git-delta git curl unzip wl-clipboard xclip nodejs npm)
   elif command -v brew >/dev/null; then
     say "Installing packages with brew"
-    brew install kitty micro fzf ripgrep fd bat zoxide lazygit git-delta node
+    brew install $(pkgs kitty micro fzf ripgrep fd bat zoxide lazygit git-delta node)
   else
-    warn "No supported package manager found. Install manually: ${CORE_APT[*]} lazydocker"
+    warn "No supported package manager found. Install manually: $(pkgs "${CORE_APT[@]}" | tr '\n' ' ')lazydocker"
     return
   fi
   ok "packages"
@@ -174,13 +186,40 @@ link() {
 
 link_configs() {
   say "Linking configs"
-  link "$REPO/kitty/local.conf"    "$CFG/kitty/local.conf"
+  [ "$REMOTE" -eq 1 ] || link "$REPO/kitty/local.conf" "$CFG/kitty/local.conf"
   link "$REPO/yazi/init.lua"       "$CFG/yazi/init.lua"
   link "$REPO/yazi/yazi.toml"      "$CFG/yazi/yazi.toml"
   link "$REPO/yazi/keymap.toml"    "$CFG/yazi/keymap.toml"
   link "$REPO/yazi/package.toml"   "$CFG/yazi/package.toml"
-  link "$REPO/micro/settings.json" "$CFG/micro/settings.json"
+  if [ "$REMOTE" -eq 1 ]; then copy_micro_remote; else
+    link "$REPO/micro/settings.json" "$CFG/micro/settings.json"
+  fi
   link_ccstatusline
+}
+
+# On a server micro cannot reach wl-clipboard/xclip, so it needs "terminal"
+# (OSC 52 -- kitty on your machine asks before each paste). That differs from
+# the repo file, so this is a copy, not a symlink: re-run --remote after
+# changing micro/settings.json. uninstall.sh recognises the copy by content.
+micro_remote_json() {
+  python3 - "$REPO/micro/settings.json" <<'PY'
+import json, sys
+with open(sys.argv[1]) as f: s = json.load(f)
+s["clipboard"] = "terminal"
+print(json.dumps(s, indent=4))
+PY
+}
+
+copy_micro_remote() {
+  local dst="$CFG/micro/settings.json" want
+  want="$(micro_remote_json)"
+  if [ -f "$dst" ] && [ ! -L "$dst" ] && [ "$(cat "$dst")" = "$want" ]; then
+    ok "${dst/#$HOME/\~} (copy, clipboard: terminal) already up to date"; return
+  fi
+  link "$REPO/micro/settings.json" "$dst" >/dev/null   # backs up the user's own file
+  rm -f "$dst"
+  printf '%s\n' "$want" > "$dst"
+  ok "${dst/#$HOME/\~} (copy, clipboard: terminal)"
 }
 
 link_ccstatusline() {
@@ -306,12 +345,20 @@ main() {
   [ "$SKIP_FONT" -eq 1 ] || install_font
   link_configs
   wire_claude_statusline
-  wire_kitty_conf
+  [ "$REMOTE" -eq 1 ] || wire_kitty_conf
   wire_shell
   install_yazi_plugins
   wire_git_delta
 
   echo
+  if [ "$REMOTE" -eq 1 ]; then
+    say "Done. Run:  source ~/.bashrc  (or log in again)"
+    echo "  Connect from your own machine with:  kitten ssh <host>"
+    echo "  (plain ssh leaves the server without kitty's terminfo)"
+    echo
+    echo "  Then:  cd <a repo> && dev"
+    return
+  fi
   say "Done. Two things left:"
   echo "  1. Restart kitty completely (font cache is read at startup)."
   echo "  2. Run:  source ~/.bashrc  (or open a new shell)"

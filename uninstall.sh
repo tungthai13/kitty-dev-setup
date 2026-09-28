@@ -12,6 +12,19 @@ for f in kitty/local.conf kitty/dev.session \
   [ -L "$CFG/$f" ] && rm -v "$CFG/$f"
 done
 
+# --remote writes micro's settings as a copy (clipboard: terminal), not a
+# symlink. Remove it only while it is still exactly that copy.
+REPO="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+m="$CFG/micro/settings.json"
+if [ -f "$m" ] && [ ! -L "$m" ] && python3 - "$REPO/micro/settings.json" "$m" <<'PY'
+import json, sys
+with open(sys.argv[1]) as f: want = json.load(f)
+want["clipboard"] = "terminal"
+with open(sys.argv[2]) as f: have = json.load(f)
+sys.exit(0 if have == want else 1)
+PY
+then rm -v "$m"; fi
+
 # lazydocker: only the copy install.sh downloaded into ~/.local/bin. A brew or
 # distro package is left alone, like every other package this repo installs.
 [ -f "$HOME/.local/bin/lazydocker" ] && rm -v "$HOME/.local/bin/lazydocker"

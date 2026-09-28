@@ -134,7 +134,10 @@ OSC 52, and kitty's default `clipboard_control` includes `read-clipboard-ask`
 clipboard" prompt. `external` uses wl-clipboard/xclip and is silent; both are
 in the install lists for that reason. Do NOT fix this by loosening kitty's
 `clipboard_control`: that lets every program in every pane read the clipboard
-without asking. The one case for `terminal` is editing over SSH.
+without asking. The one case for `terminal` is editing over SSH, which is why
+`install.sh --remote` writes micro's settings as a *copy* with `terminal`
+instead of the symlink; `uninstall.sh` removes that copy only while it still
+matches the repo file with that one change.
 
 **Do not clobber kitty defaults.** `kitty_mod` + `left/right/up/down/minus/`
 `h/j/k/l/z/g/e` are all bound by kitty. An earlier version broke tab switching

@@ -129,8 +129,25 @@ only invented key in the repo.
 
 ### Over SSH
 
-kitty runs on your machine; the remote shell cannot reach it. Splitting still
-works, but the new pane is **local** — `ssh` again inside it.
+kitty runs on your machine; the server only sees a terminal. To use the rest
+of the setup on a server, clone the repo **on the server** and run:
+
+```sh
+./install.sh --remote
+```
+
+Then always connect with `kitten ssh <host>` instead of `ssh`. kitty sets
+`TERM=xterm-kitty`, which most servers do not know — keys, colours and `clear`
+break. `kitten ssh` copies that definition to the server for you.
+
+| Works on the server | Does not |
+|---|---|
+| `dev`, `f`, `e`, yazi, micro, lazygit, lazydocker | New panes — `Ctrl+Shift+Enter` opens a pane on **your** machine; `kitten ssh` again inside it |
+| Claude Code and its status line | `Ctrl+Shift+P` then `N` — opens micro on your machine, but the file is on the server |
+| Icons — your local kitty draws them with your local font | |
+
+Copy/paste in micro works, but kitty asks each time micro reads your
+clipboard (see Troubleshooting).
 
 ## Supporting tools
 
@@ -210,7 +227,14 @@ Anything it would overwrite is moved to
 ./install.sh --no-packages   # configs + font only
 ./install.sh --no-font       # skip the ~130MB Nerd Font download
 ./install.sh --statusline-only  # only the Claude Code status line (ccstatusline)
+./install.sh --remote       # on an SSH server: no kitty, no font, micro set up for SSH
 ```
+
+`--remote` skips kitty, its config and the Nerd Font (your own machine draws
+the screen), and skips wl-clipboard/xclip (a server has no desktop). micro's
+settings are written as a **copy** with `"clipboard": "terminal"` instead of a
+symlink, so after changing `micro/settings.json`, run `./install.sh --remote`
+again on the server. Everything else is the same as a normal install.
 
 `--statusline-only` installs ccstatusline (needs `npm`), links its config and
 adds `statusLine` to `~/.claude/settings.json` — nothing else. Your other
@@ -241,8 +265,9 @@ you paste in micro.** micro is set to `"clipboard": "external"`, which talks
 to `wl-clipboard` / `xclip` directly and never triggers that prompt. If you
 still see it, the setting reverted or neither tool is installed — check
 `grep clipboard ~/.config/micro/settings.json` and `command -v wl-copy xclip`.
-Over SSH you need `"clipboard": "terminal"` instead, and the prompt comes
-back; answering it is the price of a clipboard that crosses the connection.
+Over SSH you need `"clipboard": "terminal"` instead (`--remote` sets it), and
+the prompt comes back; answering it is the price of a clipboard that crosses
+the connection.
 
 **Claude Code has no status line** (the model / context / git / usage lines
 under the prompt). It comes from `ccstatusline`. Check `command -v ccstatusline`
