@@ -226,6 +226,14 @@ double-width icons.
 **A new pane still opens at `~`.** `local.conf` was not reloaded. Press
 `Ctrl+Shift+F5`, or check `grep new_window_with_cwd ~/.config/kitty/local.conf`.
 
+**kitty asks "a program wants to read from the system clipboard" every time
+you paste in micro.** micro is set to `"clipboard": "external"`, which talks
+to `wl-clipboard` / `xclip` directly and never triggers that prompt. If you
+still see it, the setting reverted or neither tool is installed — check
+`grep clipboard ~/.config/micro/settings.json` and `command -v wl-copy xclip`.
+Over SSH you need `"clipboard": "terminal"` instead, and the prompt comes
+back; answering it is the price of a clipboard that crosses the connection.
+
 **yazi shows no git signs.** `~/.config/yazi/init.lua` must exist and call
 `require("git"):setup{}`. Re-run `./install.sh`.
 

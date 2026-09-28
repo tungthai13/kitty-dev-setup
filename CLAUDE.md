@@ -126,6 +126,14 @@ single binding, `<Enter>` (smart-enter), which only adds the directory case.
 the user's request: pressing `q` quits yazi into that folder, which covers all
 of them. Do not add yazi keys back without being asked.
 
+**micro's clipboard must be `external`, not `terminal`.** `terminal` means
+OSC 52, and kitty's default `clipboard_control` includes `read-clipboard-ask`
+-- so every paste pops a full-screen "a program wants to read from the system
+clipboard" prompt. `external` uses wl-clipboard/xclip and is silent; both are
+in the install lists for that reason. Do NOT fix this by loosening kitty's
+`clipboard_control`: that lets every program in every pane read the clipboard
+without asking. The one case for `terminal` is editing over SSH.
+
 **Do not clobber kitty defaults.** `kitty_mod` + `left/right/up/down/minus/`
 `h/j/k/l/z/g/e` are all bound by kitty. An earlier version broke tab switching
 and font sizing. This config binds **exactly one key of its own**:

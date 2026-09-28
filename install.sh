@@ -29,7 +29,8 @@ ok()   { printf '\033[1;32m[ok]\033[0m %s\n' "$*"; }
 # --------------------------------------------------------------------
 # 1. Packages
 # --------------------------------------------------------------------
-CORE_APT=(kitty micro fzf ripgrep fd-find bat zoxide lazygit git-delta git curl unzip)
+CORE_APT=(kitty micro fzf ripgrep fd-find bat zoxide lazygit git-delta git curl unzip
+          wl-clipboard xclip)
 
 install_packages() {
   if   command -v apt-get >/dev/null; then
@@ -42,10 +43,10 @@ install_packages() {
     command -v batcat  >/dev/null && ln -sf "$(command -v batcat)"  "$HOME/.local/bin/bat"
   elif command -v pacman >/dev/null; then
     say "Installing packages with pacman"
-    sudo pacman -S --needed --noconfirm kitty micro fzf ripgrep fd bat zoxide lazygit git-delta git curl unzip
+    sudo pacman -S --needed --noconfirm kitty micro fzf ripgrep fd bat zoxide lazygit git-delta git curl unzip wl-clipboard xclip
   elif command -v dnf >/dev/null; then
     say "Installing packages with dnf"
-    sudo dnf install -y kitty micro fzf ripgrep fd-find bat zoxide lazygit git-delta git curl unzip
+    sudo dnf install -y kitty micro fzf ripgrep fd-find bat zoxide lazygit git-delta git curl unzip wl-clipboard xclip
   elif command -v brew >/dev/null; then
     say "Installing packages with brew"
     brew install kitty micro fzf ripgrep fd bat zoxide lazygit git-delta

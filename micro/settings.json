@@ -1,7 +1,7 @@
 {
     "autoindent": true,
     "autosu": false,
-    "clipboard": "terminal",
+    "clipboard": "external",
     "colorcolumn": 79,
     "colorscheme": "monokai",
     "cursorline": true,
