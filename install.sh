@@ -61,6 +61,10 @@ install_packages() {
     # early SIGPIPEs apt-cache and every package reads as missing.)
     local want=() missing=() p pol
     for p in $(pkgs "${CORE_APT[@]}"); do
+      # A node that is already here (NodeSource, nvm, ...) is the user's.
+      # NodeSource's nodejs bundles npm and Conflicts: npm, so asking apt for
+      # Ubuntu's npm on top of it fails the whole install.
+      case "$p" in nodejs|npm) command -v node >/dev/null && continue ;; esac
       pol="$(apt-cache policy "$p" 2>/dev/null)"
       if [[ "$pol" == *"Candidate: "[!\(]* ]]; then want+=("$p"); else missing+=("$p"); fi
     done
