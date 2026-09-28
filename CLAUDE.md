@@ -22,6 +22,8 @@ shell/dev-workspace.bash three things only: `dev` (fzf menu), `f` (yazi+cd;
 kitty/local.conf         kitty settings + three `map` lines
 yazi/{yazi,keymap,package}.toml, yazi/init.lua
 micro/settings.json
+ccstatusline/settings.json  Claude Code status line layout; symlinked to
+                         ~/.config/ccstatusline/ (hardcoded, ignores XDG)
 install.sh / uninstall.sh
 ```
 
@@ -154,6 +156,12 @@ grep -E "^# map kitty_mod\+<key> " ~/.config/kitty/kitty.conf
 
 and confirm afterwards that the default still resolves, by loading the parsed
 config and looking the key up in `keyboard_modes[""].keymap`.
+
+**Never replace `~/.claude/settings.json`.** It holds the user's permissions,
+plugins and model. `install.sh` merges one key, `statusLine` (command
+`ccstatusline`), and only if no `statusLine` exists. `uninstall.sh` removes it
+only while it still points at `ccstatusline`. ccstatusline itself is pinned
+(`CCSTATUSLINE_VERSION`) and installed with `npm -g --prefix ~/.local`.
 
 **Never rewrite `~/.config/kitty/kitty.conf`.** It is kitty's 136KB annotated
 default. `install.sh` appends two lines (`font_family`, `include local.conf`)

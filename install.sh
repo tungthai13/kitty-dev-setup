@@ -12,12 +12,14 @@ MARK_END="# <<< kitty-dev-setup <<<"
 
 SKIP_PKGS=0
 SKIP_FONT=0
+ONLY_STATUSLINE=0
 for arg in "$@"; do
   case "$arg" in
     --no-packages) SKIP_PKGS=1 ;;
     --no-font)     SKIP_FONT=1 ;;
+    --statusline-only) ONLY_STATUSLINE=1 ;;
     -h|--help)
-      echo "usage: ./install.sh [--no-packages] [--no-font]"; exit 0 ;;
+      echo "usage: ./install.sh [--no-packages] [--no-font] [--statusline-only]"; exit 0 ;;
     *) echo "unknown flag: $arg" >&2; exit 2 ;;
   esac
 done
@@ -30,7 +32,7 @@ ok()   { printf '\033[1;32m[ok]\033[0m %s\n' "$*"; }
 # 1. Packages
 # --------------------------------------------------------------------
 CORE_APT=(kitty micro fzf ripgrep fd-find bat zoxide lazygit git-delta git curl unzip
-          wl-clipboard xclip)
+          wl-clipboard xclip nodejs npm)
 
 install_packages() {
   if   command -v apt-get >/dev/null; then
@@ -43,13 +45,13 @@ install_packages() {
     command -v batcat  >/dev/null && ln -sf "$(command -v batcat)"  "$HOME/.local/bin/bat"
   elif command -v pacman >/dev/null; then
     say "Installing packages with pacman"
-    sudo pacman -S --needed --noconfirm kitty micro fzf ripgrep fd bat zoxide lazygit git-delta git curl unzip wl-clipboard xclip
+    sudo pacman -S --needed --noconfirm kitty micro fzf ripgrep fd bat zoxide lazygit git-delta git curl unzip wl-clipboard xclip nodejs npm
   elif command -v dnf >/dev/null; then
     say "Installing packages with dnf"
-    sudo dnf install -y kitty micro fzf ripgrep fd-find bat zoxide lazygit git-delta git curl unzip wl-clipboard xclip
+    sudo dnf install -y kitty micro fzf ripgrep fd-find bat zoxide lazygit git-delta git curl unzip wl-clipboard xclip nodejs npm
   elif command -v brew >/dev/null; then
     say "Installing packages with brew"
-    brew install kitty micro fzf ripgrep fd bat zoxide lazygit git-delta
+    brew install kitty micro fzf ripgrep fd bat zoxide lazygit git-delta node
   else
     warn "No supported package manager found. Install manually: ${CORE_APT[*]} lazydocker"
     return
@@ -113,6 +115,27 @@ install_lazydocker() {
   rm -rf "$tmp"
 }
 
+# ccstatusline draws Claude Code's status line (model, context, git, usage).
+# Pinned to match the "installation" block in ccstatusline/settings.json.
+# --prefix ~/.local: no sudo, and the binary lands in ~/.local/bin next to the
+# fd/bat shims. A distro npm's default global prefix is /usr and needs root.
+CCSTATUSLINE_VERSION=2.2.30
+install_ccstatusline() {
+  local have=""
+  command -v ccstatusline >/dev/null && have="$(ccstatusline --version 2>/dev/null || true)"
+  if [ "$have" = "$CCSTATUSLINE_VERSION" ]; then ok "ccstatusline $have already installed"; return; fi
+  # A copy this script did not put in ~/.local (brew, a system npm) is the
+  # user's; leave it. Our own copy is moved to the pinned version.
+  if [ -n "$have" ] && [ ! -d "$HOME/.local/lib/node_modules/ccstatusline" ]; then
+    ok "ccstatusline $have already installed (not ours -- left as is)"; return
+  fi
+  command -v npm >/dev/null || { warn "npm not found -- install node, then re-run ./install.sh --statusline-only"; return; }
+  say "Installing ccstatusline $CCSTATUSLINE_VERSION"
+  npm install -g --prefix "$HOME/.local" "ccstatusline@$CCSTATUSLINE_VERSION" >/dev/null \
+    && ok "ccstatusline -> ~/.local/bin" \
+    || warn "ccstatusline install failed -- see https://github.com/sirmalloc/ccstatusline"
+}
+
 # --------------------------------------------------------------------
 # 2. Nerd Font  (without it every yazi icon renders as a tofu box)
 # --------------------------------------------------------------------
@@ -157,6 +180,39 @@ link_configs() {
   link "$REPO/yazi/keymap.toml"    "$CFG/yazi/keymap.toml"
   link "$REPO/yazi/package.toml"   "$CFG/yazi/package.toml"
   link "$REPO/micro/settings.json" "$CFG/micro/settings.json"
+  link_ccstatusline
+}
+
+link_ccstatusline() {
+  # ccstatusline hardcodes ~/.config -- it ignores XDG_CONFIG_HOME. Its TUI
+  # saves through the symlink (it realpath()s before the atomic rename), so
+  # edits made in `ccstatusline` land in this repo.
+  CFG="$HOME/.config" link "$REPO/ccstatusline/settings.json" "$HOME/.config/ccstatusline/settings.json"
+}
+
+# --------------------------------------------------------------------
+# 3b. Claude Code status line -- merge one key into ~/.claude/settings.json.
+# That file holds the user's permissions, plugins and model; never replace it.
+# An existing statusLine that is not ccstatusline is left alone.
+# --------------------------------------------------------------------
+wire_claude_statusline() {
+  local conf="$HOME/.claude/settings.json"
+  mkdir -p "$HOME/.claude"
+  [ -s "$conf" ] || printf '{}\n' > "$conf"
+  if grep -q '"statusLine"' "$conf"; then
+    ok "Claude Code already has a statusLine -- left as is"; return
+  fi
+  mkdir -p "$BACKUP/claude"
+  cp "$conf" "$BACKUP/claude/settings.json"
+  python3 - "$conf" <<'PY'
+import json, sys
+path = sys.argv[1]
+with open(path) as f: s = json.load(f)
+s["statusLine"] = {"type": "command", "command": "ccstatusline",
+                   "padding": 0, "refreshInterval": 10}
+with open(path, "w") as f: json.dump(s, f, indent=2); f.write("\n")
+PY
+  ok "Claude Code statusLine -> ccstatusline"
 }
 
 # --------------------------------------------------------------------
@@ -238,9 +294,18 @@ wire_git_delta() {
 # --------------------------------------------------------------------
 main() {
   say "kitty-dev-setup -- $REPO"
-  [ "$SKIP_PKGS" -eq 1 ] || { install_packages; install_yazi; install_claude; install_lazydocker; }
+  if [ "$ONLY_STATUSLINE" -eq 1 ]; then
+    # Just the Claude Code status line: no packages, font, kitty, yazi or shell.
+    [ "$SKIP_PKGS" -eq 1 ] || install_ccstatusline
+    link_ccstatusline
+    wire_claude_statusline
+    echo; say "Done. Start a new Claude Code session to see the status line."
+    return
+  fi
+  [ "$SKIP_PKGS" -eq 1 ] || { install_packages; install_yazi; install_claude; install_lazydocker; install_ccstatusline; }
   [ "$SKIP_FONT" -eq 1 ] || install_font
   link_configs
+  wire_claude_statusline
   wire_kitty_conf
   wire_shell
   install_yazi_plugins

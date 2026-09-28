@@ -1,0 +1,110 @@
+{
+  "version": 4,
+  "lines": [
+    [
+      {
+        "id": "1",
+        "type": "model",
+        "color": "cyan"
+      },
+      {
+        "id": "2",
+        "type": "separator"
+      },
+      {
+        "id": "3",
+        "type": "context-length",
+        "color": "brightRed"
+      },
+      {
+        "id": "4",
+        "type": "separator"
+      },
+      {
+        "id": "5",
+        "type": "git-branch",
+        "color": "magenta"
+      },
+      {
+        "id": "6",
+        "type": "separator"
+      },
+      {
+        "id": "7",
+        "type": "git-changes",
+        "color": "yellow"
+      }
+    ],
+    [
+      {
+        "id": "f4418c9e-3e0c-4658-927e-37408d28942d",
+        "type": "session-usage"
+      },
+      {
+        "id": "172b634f-3ac2-4748-806b-8bb0a9e2527f",
+        "type": "separator"
+      },
+      {
+        "id": "327a5f2e-ef63-4f07-953f-5b17cb832447",
+        "type": "reset-timer"
+      },
+      {
+        "id": "c235b094-d985-465c-bf27-4d5cc518f816",
+        "type": "separator"
+      },
+      {
+        "id": "835abd82-8cff-449a-abe4-e10a2b29433f",
+        "type": "weekly-usage",
+        "color": "brightMagenta"
+      },
+      {
+        "id": "523b0deb-c6d5-461f-b857-0dbfe15c9fbc",
+        "type": "separator"
+      },
+      {
+        "id": "86c1daca-ac5a-4405-b495-ed7eca3de074",
+        "type": "weekly-reset-timer",
+        "color": "brightCyan"
+      }
+    ],
+    [
+      {
+        "id": "1e901b44-863c-401c-a61c-49e6b106ffda",
+        "type": "cache-timer"
+      },
+      {
+        "id": "fc824551-d57f-4a26-aa24-4d9502964c17",
+        "type": "separator"
+      },
+      {
+        "id": "cbaa85a8-7b39-4aca-ab4c-d292e428d17b",
+        "type": "free-memory"
+      }
+    ]
+  ],
+  "flexMode": "full-minus-40",
+  "compactThreshold": 60,
+  "colorLevel": 2,
+  "defaultPaddingSide": "both",
+  "inheritSeparatorColors": false,
+  "globalBold": false,
+  "gitCacheTtlSeconds": 5,
+  "minimalistMode": false,
+  "powerline": {
+    "enabled": false,
+    "separators": [
+      ""
+    ],
+    "separatorInvertBackground": [
+      false
+    ],
+    "startCaps": [],
+    "endCaps": [],
+    "autoAlign": false,
+    "continueThemeAcrossLines": false
+  },
+  "installation": {
+    "method": "pinned",
+    "installedVersion": "2.2.30"
+  }
+}

@@ -142,6 +142,7 @@ works, but the new pane is **local** — `ssh` again inside it.
 | `fd` | VS Code file search | fzf's traversal backend |
 | `bat` | VS Code syntax highlighting | fzf previews, `$MANPAGER` |
 | `ripgrep` | VS Code find-in-files | `rg`, and fzf |
+| `ccstatusline` | VS Code status bar | Claude Code's status line — model, context, git, usage |
 
 On Debian/Ubuntu the `fd` and `bat` binaries are named `fdfind` and `batcat`;
 `install.sh` symlinks them into `~/.local/bin` under the usual names.
@@ -192,9 +193,10 @@ To start Claude Code, a shell or lazygit in the folder you are browsing, press
 kitty/local.conf      kitty settings, 2 key lines   -> ~/.config/kitty/local.conf
 yazi/*.toml, init.lua yazi config + plugins         -> ~/.config/yazi/
 micro/settings.json   editor settings               -> ~/.config/micro/settings.json
+ccstatusline/settings.json  Claude Code status line -> ~/.config/ccstatusline/
 shell/dev-workspace.bash   dev / f / e              -> sourced from ~/.bashrc
 install.sh            does all of the above
-uninstall.sh          undoes the symlinks and the shell block
+uninstall.sh          undoes the symlinks, the shell block and the statusLine key
 ```
 
 `install.sh` **symlinks**, so `git pull` in this repo updates your live config.
@@ -206,7 +208,13 @@ Anything it would overwrite is moved to
 ```sh
 ./install.sh --no-packages   # configs + font only
 ./install.sh --no-font       # skip the ~130MB Nerd Font download
+./install.sh --statusline-only  # only the Claude Code status line (ccstatusline)
 ```
+
+`--statusline-only` installs ccstatusline (needs `npm`), links its config and
+adds `statusLine` to `~/.claude/settings.json` — nothing else. Your other
+Claude Code settings are kept, and an existing `statusLine` is left alone.
+Combine with `--no-packages` to skip the npm install.
 
 ## Requirements
 
@@ -234,6 +242,12 @@ still see it, the setting reverted or neither tool is installed — check
 `grep clipboard ~/.config/micro/settings.json` and `command -v wl-copy xclip`.
 Over SSH you need `"clipboard": "terminal"` instead, and the prompt comes
 back; answering it is the price of a clipboard that crosses the connection.
+
+**Claude Code has no status line** (the model / context / git / usage lines
+under the prompt). It comes from `ccstatusline`. Check `command -v ccstatusline`
+(install.sh puts it in `~/.local/bin`) and `grep -A2 statusLine
+~/.claude/settings.json`. To change what it shows, run `ccstatusline` -- its
+editor saves into `ccstatusline/settings.json` in this repo.
 
 **yazi shows no git signs.** `~/.config/yazi/init.lua` must exist and call
 `require("git"):setup{}`. Re-run `./install.sh`.

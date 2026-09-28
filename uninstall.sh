@@ -21,6 +21,25 @@ for b in kdev kpane; do
   [ -L "$HOME/.local/bin/$b" ] && rm -v "$HOME/.local/bin/$b"
 done
 
+# ccstatusline: the config symlink (always under ~/.config -- it ignores
+# XDG_CONFIG_HOME), the copy install.sh put in ~/.local, and the statusLine key
+# -- only if it still points at ccstatusline, so a user's own line survives.
+[ -L "$HOME/.config/ccstatusline/settings.json" ] && rm -v "$HOME/.config/ccstatusline/settings.json"
+[ -d "$HOME/.local/lib/node_modules/ccstatusline" ] && command -v npm >/dev/null \
+  && npm uninstall -g --prefix "$HOME/.local" ccstatusline >/dev/null && echo "removed ccstatusline"
+if [ -f "$HOME/.claude/settings.json" ] && grep -q '"command": *"ccstatusline"' "$HOME/.claude/settings.json"; then
+  cp "$HOME/.claude/settings.json" "$HOME/.claude/settings.json.bak.$(date +%Y%m%d-%H%M%S)"
+  python3 - "$HOME/.claude/settings.json" <<'PY'
+import json, sys
+path = sys.argv[1]
+with open(path) as f: s = json.load(f)
+if s.get("statusLine", {}).get("command") == "ccstatusline":
+    del s["statusLine"]
+with open(path, "w") as f: json.dump(s, f, indent=2); f.write("\n")
+PY
+  echo "removed statusLine from ~/.claude/settings.json"
+fi
+
 for rc in "$HOME/.bashrc" "$HOME/.zshrc"; do
   [ -f "$rc" ] || continue
   if grep -qF "$MARK_BEGIN" "$rc"; then
