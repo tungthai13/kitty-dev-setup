@@ -26,6 +26,10 @@ for arg in "$@"; do
   esac
 done
 
+# Fallback installs land in ~/.local/bin. On a fresh Ubuntu login it is not on
+# PATH until the next login, so later steps (wire_git_delta) would not see them.
+case ":$PATH:" in *":$HOME/.local/bin:"*) ;; *) export PATH="$HOME/.local/bin:$PATH" ;; esac
+
 say()  { printf '\033[1;36m==>\033[0m %s\n' "$*"; }
 warn() { printf '\033[1;33m[!]\033[0m %s\n' "$*"; }
 ok()   { printf '\033[1;32m[ok]\033[0m %s\n' "$*"; }
@@ -50,7 +54,18 @@ install_packages() {
   if   command -v apt-get >/dev/null; then
     say "Installing packages with apt"
     sudo apt-get update -qq
-    sudo apt-get install -y $(pkgs "${CORE_APT[@]}")
+    # Older releases lack some of these (lazygit before 25.04, git-delta on
+    # 22.04), and apt refuses the whole list if one name is unknown. Install
+    # what apt has; the GitHub-release fallbacks below cover the rest.
+    # (Output captured, not piped into grep -q: under pipefail, grep exiting
+    # early SIGPIPEs apt-cache and every package reads as missing.)
+    local want=() missing=() p pol
+    for p in $(pkgs "${CORE_APT[@]}"); do
+      pol="$(apt-cache policy "$p" 2>/dev/null)"
+      if [[ "$pol" == *"Candidate: "[!\(]* ]]; then want+=("$p"); else missing+=("$p"); fi
+    done
+    [ "${#missing[@]}" -eq 0 ] || warn "apt has no ${missing[*]} -- installing from GitHub instead"
+    sudo apt-get install -y "${want[@]}"
     # Debian names these differently; add shims.
     mkdir -p "$HOME/.local/bin"
     command -v fdfind  >/dev/null && ln -sf "$(command -v fdfind)"  "$HOME/.local/bin/fd"
@@ -91,40 +106,68 @@ install_claude() {
   curl -fsSL https://claude.ai/install.sh | bash || warn "Claude Code install failed -- see https://docs.claude.com/en/docs/claude-code"
 }
 
-install_lazydocker() {
-  if command -v lazydocker >/dev/null; then
-    ok "lazydocker already installed ($(lazydocker --version | head -1))"; return
-  fi
-  say "Installing lazydocker"
-  if command -v brew >/dev/null; then brew install lazydocker; ok "lazydocker"; return; fi
+# lazygit, lazydocker and delta are not in every distro's repos (apt/dnf have
+# no lazydocker; Ubuntu before 25.04 has no lazygit; 22.04 has no delta), so
+# each falls back to its GitHub release tarball, installed into ~/.local/bin.
+# The version is *in* the asset filename, so /releases/latest/download/ cannot
+# be used -- the tag is resolved from the /releases/latest redirect first.
+gh_latest_tag() {
+  local url
+  url="$(curl -fsSLI -o /dev/null -w '%{url_effective}' "https://github.com/$1/releases/latest")" || return 1
+  printf '%s\n' "${url##*/}"
+}
 
-  # No distro ships it: apt/dnf have no package and Arch's is AUR-only. Take the
-  # release tarball. The version is *in* the filename, so /releases/latest/download/
-  # cannot be used -- resolve the tag first. Upstream's install script unpacks into
-  # $PWD and leaves debris there on failure; this does the same work in a tmpdir.
-  local arch tag tmp
-  case "$(uname -m)" in
-    x86_64)  arch=x86_64 ;;
-    aarch64|arm64) arch=arm64 ;;
-    armv7*)  arch=armv7 ;;
-    armv6*)  arch=armv6 ;;
-    i386|i686) arch=x86 ;;
-    *) warn "no lazydocker build for $(uname -m) -- skipping"; return ;;
-  esac
-  tag="$(curl -fsSLI -o /dev/null -w '%{url_effective}' \
-         https://github.com/jesseduffield/lazydocker/releases/latest)" || {
-    warn "could not reach GitHub -- skipping lazydocker"; return; }
-  tag="${tag##*/}"
+# gh_install <binary> <tarball url>: unpack in a tmpdir (upstream install
+# scripts unpack into $PWD and leave debris on failure) and install the binary.
+gh_install() {
+  local bin="$1" url="$2" tmp f
   tmp="$(mktemp -d)"
-  if curl -fL --retry 3 -o "$tmp/ld.tar.gz" \
-       "https://github.com/jesseduffield/lazydocker/releases/download/$tag/lazydocker_${tag#v}_$(uname -s)_$arch.tar.gz" \
-     && tar -xzf "$tmp/ld.tar.gz" -C "$tmp" lazydocker; then
-    install -Dm755 "$tmp/lazydocker" "$HOME/.local/bin/lazydocker"
-    ok "lazydocker $tag -> ~/.local/bin"
-  else
-    warn "lazydocker download failed -- see https://github.com/jesseduffield/lazydocker"
+  if curl -fL --retry 3 -so "$tmp/a.tar.gz" "$url" && tar -xzf "$tmp/a.tar.gz" -C "$tmp" \
+     && f="$(find "$tmp" -type f -name "$bin" | head -1)" && [ -n "$f" ]; then
+    install -Dm755 "$f" "$HOME/.local/bin/$bin"
+    rm -rf "$tmp"; return 0
   fi
-  rm -rf "$tmp"
+  rm -rf "$tmp"; return 1
+}
+
+# lazygit and lazydocker share a release naming scheme, except lazygit writes
+# "linux" and lazydocker "Linux".
+install_jesseduffield() {
+  local name="$1" os="$2" arch tag
+  if command -v "$name" >/dev/null; then ok "$name already installed"; return; fi
+  if command -v brew >/dev/null; then brew install "$name" && ok "$name"; return; fi
+  case "$(uname -m)" in
+    x86_64)        arch=x86_64 ;;
+    aarch64|arm64) arch=arm64 ;;
+    armv6*|armv7*) arch=armv6 ;;
+    *) warn "no $name build for $(uname -m) -- skipping"; return ;;
+  esac
+  say "Installing $name from GitHub"
+  tag="$(gh_latest_tag "jesseduffield/$name")" || { warn "could not reach GitHub -- skipping $name"; return; }
+  if gh_install "$name" "https://github.com/jesseduffield/$name/releases/download/$tag/${name}_${tag#v}_${os}_$arch.tar.gz"; then
+    ok "$name $tag -> ~/.local/bin"
+  else
+    warn "$name download failed -- see https://github.com/jesseduffield/$name"
+  fi
+}
+install_lazygit()    { install_jesseduffield lazygit linux; }
+install_lazydocker() { install_jesseduffield lazydocker Linux; }
+
+install_delta() {
+  local arch tag
+  if command -v delta >/dev/null; then ok "delta already installed"; return; fi
+  case "$(uname -m)" in
+    x86_64)        arch=x86_64-unknown-linux-musl ;;   # static: no glibc floor
+    aarch64|arm64) arch=aarch64-unknown-linux-gnu ;;
+    *) warn "no delta build for $(uname -m) -- skipping"; return ;;
+  esac
+  say "Installing delta from GitHub"
+  tag="$(gh_latest_tag dandavison/delta)" || { warn "could not reach GitHub -- skipping delta"; return; }
+  if gh_install delta "https://github.com/dandavison/delta/releases/download/$tag/delta-$tag-$arch.tar.gz"; then
+    ok "delta $tag -> ~/.local/bin"
+  else
+    warn "delta download failed -- see https://github.com/dandavison/delta"
+  fi
 }
 
 # ccstatusline draws Claude Code's status line (model, context, git, usage).
@@ -142,6 +185,13 @@ install_ccstatusline() {
     ok "ccstatusline $have already installed (not ours -- left as is)"; return
   fi
   command -v npm >/dev/null || { warn "npm not found -- install node, then re-run ./install.sh --statusline-only"; return; }
+  # ccstatusline needs node >= 14; Ubuntu 22.04's apt node is 12.
+  local node_major
+  node_major="$(node -p 'process.versions.node.split(".")[0]' 2>/dev/null || echo 0)"
+  if [ "$node_major" -lt 14 ]; then
+    warn "ccstatusline needs node 14+, this is $(node --version 2>/dev/null || echo none) -- install a newer node (e.g. nodesource), then re-run ./install.sh --statusline-only"
+    return
+  fi
   say "Installing ccstatusline $CCSTATUSLINE_VERSION"
   npm install -g --prefix "$HOME/.local" "ccstatusline@$CCSTATUSLINE_VERSION" >/dev/null \
     && ok "ccstatusline -> ~/.local/bin" \
@@ -341,7 +391,7 @@ main() {
     echo; say "Done. Start a new Claude Code session to see the status line."
     return
   fi
-  [ "$SKIP_PKGS" -eq 1 ] || { install_packages; install_yazi; install_claude; install_lazydocker; install_ccstatusline; }
+  [ "$SKIP_PKGS" -eq 1 ] || { install_packages; install_yazi; install_claude; install_lazygit; install_delta; install_lazydocker; install_ccstatusline; }
   [ "$SKIP_FONT" -eq 1 ] || install_font
   link_configs
   wire_claude_statusline

@@ -247,6 +247,15 @@ Ubuntu/Debian, Arch, Fedora, or macOS (Homebrew). `install.sh` picks the right
 package manager. On Debian it symlinks `fdfind`→`fd` and `batcat`→`bat` into
 `~/.local/bin`.
 
+Older Ubuntu releases do not package everything: 22.04 and 24.04 have no
+`lazygit`, and 22.04 has no `git-delta`. `install.sh` installs what apt has
+and downloads the rest from their GitHub releases into `~/.local/bin`.
+
+The Claude Code status line needs Node 14 or newer. Ubuntu 22.04's apt Node
+is 12, so there `install.sh` skips ccstatusline with a warning — install a
+newer Node (for example from NodeSource), then run
+`./install.sh --statusline-only`.
+
 ## Troubleshooting
 
 **Every icon is a `▯▯` box.** The Nerd Font is missing or kitty has not

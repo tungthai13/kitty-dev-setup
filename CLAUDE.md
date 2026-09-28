@@ -170,6 +170,15 @@ only while it still points at `ccstatusline`. ccstatusline itself is pinned
 default. `install.sh` appends two lines (`font_family`, `include local.conf`)
 and nothing else, guarded by `grep` so re-runs are safe.
 
+**apt refuses the whole package list if one name is unknown.** Ubuntu
+22.04/24.04 have no `lazygit`; 22.04 has no `git-delta` and ships node 12
+(ccstatusline needs 14+). `install_packages` filters the list through
+`apt-cache policy` and the GitHub-release fallbacks (`install_lazygit`,
+`install_delta`, `install_lazydocker`) cover the gaps. Test distro changes in
+`docker run ubuntu:22.04` / `ubuntu:24.04`, not on the host. And never write
+`cmd | grep -q` in these scripts: under `set -o pipefail` grep exits on the
+first match, `cmd` gets SIGPIPE, and the test reads as false.
+
 **Debian/Ubuntu name the binaries `fdfind` and `batcat`.** `install.sh`
 symlinks them to `fd` and `bat` in `~/.local/bin`.
 
