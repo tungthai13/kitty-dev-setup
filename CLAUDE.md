@@ -19,7 +19,7 @@ live edit.
 shell/dev-workspace.bash three things only: `dev` (fzf menu), `f` (yazi+cd;
                          f as in files/folders), `e` (micro at path:line);
                          sourced from ~/.bashrc
-kitty/local.conf         kitty settings + three `map` lines
+kitty/local.conf         kitty settings + two `map` lines
 yazi/{yazi,keymap,package}.toml, yazi/init.lua
 micro/settings.json
 ccstatusline/settings.json  Claude Code status line layout; symlinked to
@@ -141,9 +141,9 @@ without asking. The one case for `terminal` is editing over SSH.
 and font sizing. This config binds **exactly one key of its own**:
 `kitty_mod+'` (`launch --location=hsplit`), because kitty's splits layout only
 ever splits side by side and ships no key for a top/bottom split --
-`layout_action` is unbound in the defaults. The other two `map` lines point
-kitty's own `kitty_mod+enter` and `kitty_mod+t` at kitty's own
-`new_window_with_cwd` / `new_tab_with_cwd`. `kitty_mod+alt+*` and the five
+`layout_action` is unbound in the defaults. The other `map` line points
+kitty's own `kitty_mod+enter` at kitty's own `new_window_with_cwd`;
+`kitty_mod+t` is stock `new_tab` (a new tab starts at `~` on purpose). `kitty_mod+alt+*` and the five
 `kitty_mod+p>*` overrides were tried and removed; do not reintroduce either.
 Before binding anything new, ask -- the user's standing rule is that a new
 machine should not require working out which keys are this repo's.

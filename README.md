@@ -107,12 +107,12 @@ one kitty behaviour this config changes:
 
 ```
 map kitty_mod+enter new_window_with_cwd
-map kitty_mod+t     new_tab_with_cwd
 ```
 
-`new_window_with_cwd` and `new_tab_with_cwd` are kitty's own actions, bound to
-kitty's own keys — so the keys you press do not change, they just behave like
-VS Code's "new terminal opens in the project folder".
+`new_window_with_cwd` is kitty's own action, bound to kitty's own key — so the
+key you press does not change, it just behaves like VS Code's "new terminal
+opens in the project folder". New tabs (`Ctrl+Shift+T`) are left alone and
+start at `~`: a tab is a different piece of work.
 
 ### Stacking a pane
 
@@ -150,8 +150,9 @@ On Debian/Ubuntu the `fd` and `bat` binaries are named `fdfind` and `batcat`;
 ## kitty keys
 
 `kitty_mod` is <kbd>Ctrl</kbd>+<kbd>Shift</kbd>. **One key here is ours**, and
-it is the only one in the whole repo: `kitty_mod`+<kbd>'</kbd>. Two more lines
-point kitty's own keys at kitty's own `*_with_cwd` actions. Everything else is
+it is the only one in the whole repo: `kitty_mod`+<kbd>'</kbd>. One more line
+points kitty's own `kitty_mod`+<kbd>Enter</kbd> at kitty's own
+`new_window_with_cwd`. Everything else is
 stock kitty.
 
 That is deliberate: on a new machine, the only key you have to remember is
