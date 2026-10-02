@@ -177,7 +177,11 @@ and nothing else, guarded by `grep` so re-runs are safe.
 `install_delta`, `install_lazydocker`) cover the gaps. Test distro changes in
 `docker run ubuntu:22.04` / `ubuntu:24.04`, not on the host. And never write
 `cmd | grep -q` in these scripts: under `set -o pipefail` grep exits on the
-first match, `cmd` gets SIGPIPE, and the test reads as false.
+first match, `cmd` gets SIGPIPE, and the test reads as false. The same goes
+for `| head -1` (yazi 26 panics with "Broken pipe" on `yazi --version | head
+-1`) and for `| grep ... >/dev/null`, which GNU grep treats exactly like
+`-q`. Capture the output first (`out="$(cmd)"; grep -q x <<<"$out"`), let
+`awk`/`sed` read to EOF, or use `find ... -print -quit`.
 
 **Debian/Ubuntu name the binaries `fdfind` and `batcat`.** `install.sh`
 symlinks them to `fd` and `bat` in `~/.local/bin`.

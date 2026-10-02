@@ -90,8 +90,15 @@ install_packages() {
   ok "packages"
 }
 
+# yazi 26 prints a multi-line --version ("Yazi" / "  Version: 26.9.1 ...");
+# older builds print "Yazi 25.5.31 (...)" on one line. awk reads to EOF --
+# `| head -1` closes the pipe early and yazi panics with "Broken pipe".
+yazi_version() {
+  yazi --version 2>/dev/null | awk 'NR==1 {v=$2} /Version:/ {v=$2} END {print v}'
+}
+
 install_yazi() {
-  if command -v yazi >/dev/null; then ok "yazi already installed ($(yazi --version | head -1))"; return; fi
+  if command -v yazi >/dev/null; then ok "yazi already installed ($(yazi_version))"; return; fi
   say "Installing yazi"
   if   command -v pacman >/dev/null; then sudo pacman -S --needed --noconfirm yazi
   elif command -v brew   >/dev/null; then brew install yazi
@@ -127,7 +134,7 @@ gh_install() {
   local bin="$1" url="$2" tmp f
   tmp="$(mktemp -d)"
   if curl -fL --retry 3 -so "$tmp/a.tar.gz" "$url" && tar -xzf "$tmp/a.tar.gz" -C "$tmp" \
-     && f="$(find "$tmp" -type f -name "$bin" | head -1)" && [ -n "$f" ]; then
+     && f="$(find "$tmp" -type f -name "$bin" -print -quit)" && [ -n "$f" ]; then
     install -Dm755 "$f" "$HOME/.local/bin/$bin"
     rm -rf "$tmp"; return 0
   fi
@@ -206,7 +213,10 @@ install_ccstatusline() {
 # 2. Nerd Font  (without it every yazi icon renders as a tofu box)
 # --------------------------------------------------------------------
 install_font() {
-  if fc-list 2>/dev/null | grep -qi "$FONT Nerd Font"; then
+  # No pipe: under pipefail `fc-list | grep -q` reads as false once grep exits
+  # on the match and fc-list takes SIGPIPE (grep >/dev/null does the same).
+  local fonts; fonts="$(fc-list 2>/dev/null || true)"
+  if grep -qi "$FONT Nerd Font" <<<"$fonts"; then
     ok "$FONT Nerd Font already installed"; return
   fi
   say "Installing $FONT Nerd Font"
@@ -365,7 +375,7 @@ install_yazi_plugins() {
   say "Installing yazi plugins from package.toml"
   # `ya pkg install` deploys every dep listed in the symlinked package.toml.
   ya pkg install || warn "ya pkg install failed -- run it by hand"
-  ok "yazi plugins: $(ls "$CFG/yazi/plugins" 2>/dev/null | tr '\\n' ' ')"
+  ok "yazi plugins: $(ls "$CFG/yazi/plugins" 2>/dev/null | tr '\n' ' ')"
 }
 
 # --------------------------------------------------------------------
